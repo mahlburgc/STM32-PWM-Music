@@ -39,7 +39,6 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 uint32_t sysTickCounter = 0;
@@ -51,6 +50,7 @@ static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 void delay(uint32_t delayMs);
+void print(char* msg);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -65,13 +65,14 @@ void delay(uint32_t delayMs);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  char* msg = "Hello World!\r\n";
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_SYSCFG);
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
 
   /* USER CODE BEGIN Init */
 
@@ -81,7 +82,10 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  /* Otherwise SysTick Interrupt is not triggered */
+  SystemCoreClockUpdate();
+  SysTick_Config(SystemCoreClock / (1000U));
+  NVIC_SetPriority(SysTick_IRQn, 0);
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -95,8 +99,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    LL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-    HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), 100);
+    LL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
+    print("Hello World!\r\n");
     delay(500);
     /* USER CODE END WHILE */
 
@@ -140,13 +144,8 @@ void SystemClock_Config(void)
   {
 
   }
+  LL_Init1msTick(48000000);
   LL_SetSystemCoreClock(48000000);
-
-   /* Update the time base */
-  if (HAL_InitTick (TICK_INT_PRIORITY) != HAL_OK)
-  {
-    Error_Handler();
-  }
   LL_RCC_SetUSARTClockSource(LL_RCC_USART1_CLKSOURCE_PCLK1);
 }
 
@@ -162,23 +161,48 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 0 */
 
+  LL_USART_InitTypeDef USART_InitStruct = {0};
+
+  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  /* Peripheral clock enable */
+  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_USART1);
+
+  LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
+  /**USART1 GPIO Configuration
+  PA9   ------> USART1_TX
+  PA10   ------> USART1_RX
+  */
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_9;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Alternate = LL_GPIO_AF_1;
+  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_10;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Alternate = LL_GPIO_AF_1;
+  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
   /* USER CODE BEGIN USART1_Init 1 */
 
   /* USER CODE END USART1_Init 1 */
-  huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
-  huart1.Init.WordLength = UART_WORDLENGTH_8B;
-  huart1.Init.StopBits = UART_STOPBITS_1;
-  huart1.Init.Parity = UART_PARITY_NONE;
-  huart1.Init.Mode = UART_MODE_TX_RX;
-  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
-  huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-  huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-  if (HAL_UART_Init(&huart1) != HAL_OK)
-  {
-    Error_Handler();
-  }
+  USART_InitStruct.BaudRate = 115200;
+  USART_InitStruct.DataWidth = LL_USART_DATAWIDTH_8B;
+  USART_InitStruct.StopBits = LL_USART_STOPBITS_1;
+  USART_InitStruct.Parity = LL_USART_PARITY_NONE;
+  USART_InitStruct.TransferDirection = LL_USART_DIRECTION_TX_RX;
+  USART_InitStruct.HardwareFlowControl = LL_USART_HWCONTROL_NONE;
+  USART_InitStruct.OverSampling = LL_USART_OVERSAMPLING_16;
+  LL_USART_Init(USART1, &USART_InitStruct);
+  LL_USART_DisableIT_CTS(USART1);
+  LL_USART_ConfigAsyncMode(USART1);
+  LL_USART_Enable(USART1);
   /* USER CODE BEGIN USART1_Init 2 */
 
   /* USER CODE END USART1_Init 2 */
@@ -274,6 +298,27 @@ void delay(uint32_t delayMs)
     /* wait */
   }
 }
+
+/**
+ * @brief Print message on uart1.
+ *        Only print up to 80 chars to uart1.
+ */
+void print(char* msg)
+{
+  assert_param(msg != NULL);
+
+  uint8_t msgLen = strnlen(msg, 80);
+
+  for (uint8_t i = 0; i < msgLen; i++)
+  {
+    LL_USART_TransmitData8(USART1, *(msg + i));
+    while (0 == LL_USART_IsActiveFlag_TC(USART1))
+    {
+      /* wait till char transmission is completed */
+    }
+    LL_USART_ClearFlag_TC(USART1);
+  }
+}
 /* USER CODE END 4 */
 
 /**
@@ -283,10 +328,10 @@ void delay(uint32_t delayMs)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
   while (1)
   {
+    LL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+    delay(200);
   }
   /* USER CODE END Error_Handler_Debug */
 }
@@ -304,6 +349,7 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  Error_Handler();
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
