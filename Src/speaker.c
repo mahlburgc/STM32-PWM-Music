@@ -48,11 +48,11 @@ Speaker_t speaker[3] =
 
 /* tone length */
 uint16_t quarter = 480; /* ms */
-uint16_t full = 480 * 4;
-uint16_t half = 480 * 2;
-uint16_t eighth = 480 / 2;
-uint16_t sixteenth = 480 / 4;
-uint16_t thirtysecond = 480 / 8;
+uint16_t full = quarter * 4;
+uint16_t half = quarter * 2;
+uint16_t eighth = quarter / 2;
+uint16_t sixteenth = quarter / 4;
+uint16_t thirtysecond = quarter / 8;
 
 static uint16_t staccatoLength = 0;
 
@@ -76,11 +76,28 @@ static void SPEAKER_SetFrequency(SpeakerNr_t nr, uint32_t frequency)
 
     assert_param((frequency >= f_pwm_min) && (frequency <= f_pwm_max));
 #endif
+
     uint32_t autoReload = (f_sys / (f_pwm * (psc + 1))) - 1;
     uint32_t pulseWidth = ((autoReload + 1) / 2) - 1;
 
     LL_TIM_SetAutoReload(speaker[nr].timer, autoReload);
-    LL_TIM_OC_SetCompareCH1(speaker[nr].timer, pulseWidth);
+
+    if (speaker[nr].channel == LL_TIM_CHANNEL_CH1)
+    {
+      LL_TIM_OC_SetCompareCH1(speaker[nr].timer, pulseWidth);
+    }
+    else if (speaker[nr].channel == LL_TIM_CHANNEL_CH2)
+    {
+      LL_TIM_OC_SetCompareCH2(speaker[nr].timer, pulseWidth);
+    }
+    else if (speaker[nr].channel == LL_TIM_CHANNEL_CH3)
+    {
+      LL_TIM_OC_SetCompareCH3(speaker[nr].timer, pulseWidth);
+    }
+    else if (speaker[nr].channel == LL_TIM_CHANNEL_CH4)
+    {
+      LL_TIM_OC_SetCompareCH4(speaker[nr].timer, pulseWidth);
+    }
 }
 
 /**
@@ -122,14 +139,14 @@ void SPEAKER_Play(SpeakerNr_t nr, uint32_t frequency, uint32_t duration)
         LL_TIM_EnableCounter(speaker[nr].timer);
         LL_TIM_CC_EnableChannel(speaker[nr].timer, speaker[nr].channel);
 
-        delay(duration);
+        osDelay(duration);
 
         LL_TIM_CC_DisableChannel(speaker[nr].timer, speaker[nr].channel);
         LL_TIM_DisableCounter(speaker[nr].timer);
     }
     else /* pause */
     {
-        delay(duration);
+        osDelay(duration);
     }
 }
 
@@ -162,7 +179,7 @@ void SPEAKER_Pause(SpeakerNr_t nr, uint32_t duration)
 {
     LL_TIM_CC_DisableChannel(speaker[nr].timer, speaker[nr].channel);
     LL_TIM_DisableCounter(speaker[nr].timer);
-    delay(duration);
+    osDelay(duration);
 }
 
 
@@ -212,7 +229,7 @@ void SPEAKER_PlayTwo(SpeakerNr_t sp1, uint32_t freq1, SpeakerNr_t sp2, uint32_t 
         LL_TIM_EnableCounter(speaker[sp2].timer);
         LL_TIM_CC_EnableChannel(speaker[sp2].timer, speaker[sp2].channel);
 
-        delay(duration - staccatoLength);
+        osDelay(duration - staccatoLength);
 
         LL_TIM_CC_DisableChannel(speaker[sp1].timer, speaker[sp1].channel);
         LL_TIM_DisableCounter(speaker[sp1].timer);
@@ -220,10 +237,10 @@ void SPEAKER_PlayTwo(SpeakerNr_t sp1, uint32_t freq1, SpeakerNr_t sp2, uint32_t 
         LL_TIM_CC_DisableChannel(speaker[sp2].timer, speaker[sp2].channel);
         LL_TIM_DisableCounter(speaker[sp2].timer);
 
-        delay(staccatoLength);
+        osDelay(staccatoLength);
     }
     else /* pause */
     {
-        delay(duration);
+        osDelay(duration);
     }
 }

@@ -1332,3 +1332,560 @@ void MUSIC_Play_TetrisRagtime_LeftHand(void)
     SPEAKER_Pause(left, eighth);
 #endif
 }
+
+///**
+// * @brief Play Tetris
+// */
+//void SPEAKER_Play_Tetris(void)
+//{
+//    const uint16_t duration = 400; /* for quarter note */
+//
+//    const uint16_t full = duration * 4;
+//    const uint16_t half = duration * 2;
+//    const uint16_t quarter = duration;
+//    const uint16_t eighth = duration / 2;
+//    const uint16_t sixteenth = duration / 4;
+//
+//    enum
+//    {
+//        left = 0,
+//        right = 1,
+//        middle = 2,
+//    };
+//
+//    /* 1 */
+//    SPEAKER_Play(right, e5, quarter);
+//    SPEAKER_Play(right, h4, eighth);
+//    SPEAKER_Play(right, c5, eighth);
+//    SPEAKER_Play(right, d5, eighth);
+//    SPEAKER_Play(right, e5, sixteenth);
+//    SPEAKER_Play(right, d5, sixteenth);
+//    SPEAKER_Play(right, c5, eighth);
+//    SPEAKER_Play(right, h4, eighth);
+//
+//    /* 2 */
+//    SPEAKER_Play(right, a4, quarter);
+//    SPEAKER_Play(right, a4, eighth);
+//    SPEAKER_Play(right, c5, eighth);
+//    SPEAKER_Play(right, e5, quarter);
+//    SPEAKER_Play(right, d5, eighth);
+//    SPEAKER_Play(right, c5, eighth);
+//
+//    /* 3 */
+//    SPEAKER_Play(right, h4, quarter);
+//    SPEAKER_Play(right, h4, eighth);
+//    SPEAKER_Play(right, c5, eighth);
+//    SPEAKER_Play(right, d5, quarter);
+//    SPEAKER_Play(right, e5, quarter);
+//
+//    /* 4 */
+//    SPEAKER_Play(right, c5, quarter);
+//    SPEAKER_Play(right, a4, quarter);
+//    SPEAKER_Play(right, a4, half);
+//
+//    /* 5 */
+//    SPEAKER_Play(right, 0, eighth);
+//    SPEAKER_Play(right, d5, quarter);
+//    SPEAKER_Play(right, f5, eighth);
+//    SPEAKER_Play(right, a5, quarter);
+//    SPEAKER_Play(right, g5, eighth);
+//    SPEAKER_Play(right, f5, eighth);
+//
+//    /* 6 */
+//    SPEAKER_Play(right, 0, eighth);
+//    SPEAKER_Play(right, e5, quarter);
+//    SPEAKER_Play(right, c5, eighth);
+//    SPEAKER_Play(right, e5, quarter);
+//    SPEAKER_Play(right, d5, eighth);
+//    SPEAKER_Play(right, c5, eighth);
+//
+//    /* 7 */
+//    SPEAKER_Play(right, h4, quarter);
+//    SPEAKER_Play(right, h4, eighth);
+//    SPEAKER_Play(right, c5, eighth);
+//    SPEAKER_Play(right, d5, quarter);
+//    SPEAKER_Play(right, e5, quarter);
+//
+//    /* 8 */
+//    SPEAKER_Play(right, c5, quarter);
+//    SPEAKER_Play(right, a4, quarter);
+//    SPEAKER_Play(right, a4, half);
+//
+//    for (uint8_t i = 0; i < 1; i++)
+//    {
+//        /* 1 */
+//        SPEAKER_PlayCont(right, e5);
+//        SPEAKER_Play(left, e2, eighth);
+//        SPEAKER_Play(left, e3, eighth);
+//
+//        SPEAKER_PlayCont(right, h4);
+//        SPEAKER_Play(left, e2, eighth);
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_Play(left, e3, eighth);
+//
+//        SPEAKER_PlayCont(right, d5);
+//        SPEAKER_Play(left, e2, eighth);
+//        SPEAKER_PlayCont(left, e3);
+//        SPEAKER_Play(right, e5, sixteenth);
+//        SPEAKER_Play(right, d5, sixteenth);
+//
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_Play(left, e2, eighth);
+//        SPEAKER_PlayCont(right, h4);
+//        SPEAKER_Play(left, e3, eighth);
+//
+//        /* 2 */
+//        SPEAKER_PlayCont(right, a4);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_Play(left, a3, eighth);
+//
+//        SPEAKER_PlayCont(right, a4);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_Play(left, a3, eighth);
+//
+//        SPEAKER_PlayCont(right, e5);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_Play(left, a3, eighth);
+//
+//        SPEAKER_PlayCont(right, d5);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_Play(left, a3, eighth);
+//
+//        /* 3 */
+//        SPEAKER_PlayCont(right, h4);
+//        SPEAKER_Play(left, gis2, eighth);
+//        SPEAKER_Play(left, gis3, eighth);
+//
+//        SPEAKER_PlayCont(right, h4);
+//        SPEAKER_Play(left, gis2, eighth);
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_Play(left, gis3, eighth);
+//
+//
+//        SPEAKER_PlayCont(right, d5);
+//        SPEAKER_Play(left, e2, eighth);
+//        SPEAKER_Play(left, e3, eighth);
+//
+//        SPEAKER_PlayCont(right, e5);
+//        SPEAKER_Play(left, e2, eighth);
+//        SPEAKER_Play(left, e3, eighth);
+//
+//        /* 4 */
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_Play(left, a3, eighth);
+//
+//        SPEAKER_PlayCont(right, a4);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_Play(left, a3, eighth);
+//
+//        SPEAKER_PlayCont(right, a4);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_Play(left, h2, eighth);
+//        SPEAKER_Play(left, c2, eighth);
+//        SPEAKER_Play(left, d3, eighth);
+//
+//        /* 5 */
+//        SPEAKER_PlayCont(right, 0);
+//        SPEAKER_Play(left, d2, eighth);
+//        SPEAKER_PlayCont(right, d5);
+//        SPEAKER_Play(left, d3, eighth);
+//        SPEAKER_Play(left, d2, eighth);
+//        SPEAKER_PlayCont(right, f5);
+//        SPEAKER_Play(left, d3, eighth);
+//
+//        SPEAKER_PlayCont(right, a5);
+//        SPEAKER_Play(left, d2, eighth);
+//        SPEAKER_Play(left, d3, eighth);
+//
+//        SPEAKER_PlayCont(right, g5);
+//        SPEAKER_Play(left, d2, eighth);
+//        SPEAKER_PlayCont(right, f5);
+//        SPEAKER_Play(left, d3, eighth);
+//
+//        /* 6 */
+//        SPEAKER_PlayCont(right, 0);
+//        SPEAKER_Play(left, c2, eighth);
+//
+//        SPEAKER_PlayCont(right, e5);
+//        SPEAKER_Play(left, c3, eighth);
+//        SPEAKER_Play(left, c2, eighth);
+//
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_Play(left, c3, eighth);
+//
+//        SPEAKER_PlayCont(right, e5);
+//        SPEAKER_Play(left, c2, eighth);
+//        SPEAKER_Play(left, c3, eighth);
+//
+//        SPEAKER_PlayCont(right, d5);
+//        SPEAKER_Play(left, c2, eighth);
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_Play(left, c3, eighth);
+//
+//        /* 7 */
+//        SPEAKER_PlayCont(right, h4);
+//        SPEAKER_Play(left, g2, eighth);
+//        SPEAKER_Play(left, g3, eighth);
+//
+//        SPEAKER_PlayCont(right, h4);
+//        SPEAKER_Play(left, g2, eighth);
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_Play(left, g3, eighth);
+//
+//        SPEAKER_PlayCont(right, d5);
+//        SPEAKER_Play(left, e2, eighth);
+//        SPEAKER_Play(left, e3, eighth);
+//
+//        SPEAKER_PlayCont(right, e5);
+//        SPEAKER_Play(left, e2, eighth);
+//        SPEAKER_Play(left, e3, eighth);
+//
+//        /* 8 */
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_Play(left, a3, eighth);
+//
+//        SPEAKER_PlayCont(right, a4);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_Play(left, a3, eighth);
+//
+//        SPEAKER_PlayCont(right, a4);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_Play(left, a3, eighth);
+//        SPEAKER_Play(left, a2, quarter);
+//    }
+//
+//    /* 1 */
+//    SPEAKER_PlayCont(right, e5);
+//    SPEAKER_PlayCont(middle, c5);
+//    SPEAKER_Play(left, a2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//    SPEAKER_Play(left, a2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//
+//    /* 2 */
+//    SPEAKER_PlayCont(right, c5);
+//    SPEAKER_PlayCont(middle, a4);
+//    SPEAKER_Play(left, a2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//    SPEAKER_Play(left, a2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//
+//    /* 3 */
+//    SPEAKER_PlayCont(right, d5);
+//    SPEAKER_PlayCont(middle, h4);
+//    SPEAKER_Play(left, h2, eighth);
+//    SPEAKER_Play(left, d3, eighth);
+//    SPEAKER_Play(left, h2, eighth);
+//    SPEAKER_Play(left, d3, eighth);
+//
+//    /* 4 */
+//    SPEAKER_PlayCont(right, h4);
+//    SPEAKER_PlayCont(middle, gis4);
+//    SPEAKER_Play(left, h2, eighth);
+//    SPEAKER_Play(left, d3, eighth);
+//    SPEAKER_Play(left, h2, eighth);
+//    SPEAKER_Play(left, d3, eighth);
+//
+//    /* 5 */
+//    SPEAKER_PlayCont(right, c5);
+//    SPEAKER_PlayCont(middle, a4);
+//    SPEAKER_Play(left, a2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//    SPEAKER_Play(left, a2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//
+//    /* 6 */
+//    SPEAKER_PlayCont(right, a4);
+//    SPEAKER_PlayCont(middle, e4);
+//    SPEAKER_Play(left, a2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//    SPEAKER_Play(left, a2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//
+//    /* 7 */
+//    SPEAKER_PlayCont(right, gis4);
+//    SPEAKER_PlayCont(middle, e4);
+//    SPEAKER_Play(left, gis2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//    SPEAKER_Play(left, gis2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//
+//    /* 8 */
+//    SPEAKER_PlayCont(right, h4);
+//    SPEAKER_PlayCont(middle, gis4);
+//    SPEAKER_Play(left, gis2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//    SPEAKER_Play(left, gis2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//
+//    /* 9 */
+//    SPEAKER_PlayCont(right, e5);
+//    SPEAKER_PlayCont(middle, c5);
+//    SPEAKER_Play(left, a2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//    SPEAKER_Play(left, a2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//
+//    /* 10 */
+//    SPEAKER_PlayCont(right, c5);
+//    SPEAKER_PlayCont(middle, a4);
+//    SPEAKER_Play(left, a2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//    SPEAKER_Play(left, a2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//
+//    /* 11 */
+//    SPEAKER_PlayCont(right, d5);
+//    SPEAKER_PlayCont(middle, h4);
+//    SPEAKER_Play(left, h2, eighth);
+//    SPEAKER_Play(left, d3, eighth);
+//    SPEAKER_Play(left, h2, eighth);
+//    SPEAKER_Play(left, d3, eighth);
+//
+//    /* 12 */
+//    SPEAKER_PlayCont(right, h4);
+//    SPEAKER_PlayCont(middle, gis4);
+//    SPEAKER_Play(left, h2, eighth);
+//    SPEAKER_Play(left, d3, eighth);
+//    SPEAKER_Play(left, h2, eighth);
+//    SPEAKER_Play(left, d3, eighth);
+//
+//    /* 13 */
+//    SPEAKER_PlayCont(right, c5);
+//    SPEAKER_PlayCont(middle, a4);
+//    SPEAKER_Play(left, a2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//    SPEAKER_PlayCont(right, e5);
+//    SPEAKER_PlayCont(middle, c5);
+//    SPEAKER_Play(left, a2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//
+//    /* 14 */
+//    SPEAKER_PlayCont(right, a5);
+//    SPEAKER_PlayCont(middle, e5);
+//    SPEAKER_Play(left, a2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//    SPEAKER_PlayCont(right, a5);
+//    SPEAKER_PlayCont(middle, e5);
+//    SPEAKER_Play(left, a2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//
+//    /* 15 */
+//    SPEAKER_PlayCont(right, gis5);
+//    SPEAKER_PlayCont(middle, e5);
+//    SPEAKER_Play(left, gis2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//    SPEAKER_Play(left, gis2, eighth);
+//    SPEAKER_Play(left, e3, eighth);
+//
+//    /* 16 */
+//    SPEAKER_Play(left, gis2, quarter - 10);
+//    SPEAKER_Pause(left, 10);
+//    SPEAKER_Play(left, gis2, quarter - 10);
+//    SPEAKER_Pause(left, 10);
+//
+//    for (uint8_t i = 0; i < 2; i++)
+//    {
+//        /* 1 */
+//        SPEAKER_PlayCont(right, e5);
+//        SPEAKER_PlayCont(middle, h4);
+//        SPEAKER_Play(left, e2, eighth);
+//        SPEAKER_Play(left, e3, eighth);
+//
+//        SPEAKER_PlayCont(right, h4);
+//        SPEAKER_PlayCont(middle, gis4);
+//        SPEAKER_Play(left, e2, eighth);
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_PlayCont(middle, a4);
+//        SPEAKER_Play(left, e3, eighth);
+//
+//        SPEAKER_PlayCont(right, d5);
+//        SPEAKER_PlayCont(middle, h4);
+//        SPEAKER_Play(left, e2, eighth);
+//        SPEAKER_PlayCont(left, e3);
+//        SPEAKER_Play(right, e5, sixteenth);
+//        SPEAKER_PlayCont(middle, 0);
+//        SPEAKER_Play(right, d5, sixteenth);
+//        SPEAKER_PlayCont(middle, 0);
+//
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_PlayCont(middle, a4);
+//        SPEAKER_Play(left, e2, eighth);
+//        SPEAKER_PlayCont(right, h4);
+//        SPEAKER_PlayCont(middle, gis4);
+//        SPEAKER_Play(left, e3, eighth);
+//
+//        /* 2 */
+//        SPEAKER_PlayCont(right, a4);
+//        SPEAKER_PlayCont(middle, e4);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_Play(left, a3, eighth);
+//
+//        SPEAKER_PlayCont(right, a4);
+//        SPEAKER_PlayCont(middle, e4);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_PlayCont(middle, a5);
+//        SPEAKER_Play(left, a3, eighth);
+//
+//        SPEAKER_PlayCont(right, e5);
+//        SPEAKER_PlayCont(middle, c5);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_Play(left, a3, eighth);
+//
+//        SPEAKER_PlayCont(right, d5);
+//        SPEAKER_PlayCont(middle, h4);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_PlayCont(middle, a4);
+//        SPEAKER_Play(left, a3, eighth);
+//
+//        /* 3 */
+//        SPEAKER_PlayCont(right, h4);
+//        SPEAKER_PlayCont(middle, gis4);
+//        SPEAKER_Play(left, gis2, eighth);
+//        SPEAKER_PlayCont(right, e4);
+//        SPEAKER_PlayCont(middle, 0);
+//        SPEAKER_Play(left, gis3, eighth);
+//
+//        SPEAKER_PlayCont(left, gis2);
+//        SPEAKER_Play(right, gis4, sixteenth);
+//        SPEAKER_Play(right, gis4, sixteenth);
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_Play(left, gis3, eighth);
+//
+//        SPEAKER_PlayCont(right, d5);
+//        SPEAKER_PlayCont(middle, h4);
+//        SPEAKER_Play(left, e2, eighth);
+//        SPEAKER_Play(left, e3, eighth);
+//
+//        SPEAKER_PlayCont(right, e5);
+//        SPEAKER_PlayCont(middle, c4);
+//        SPEAKER_Play(left, e2, eighth);
+//        SPEAKER_Play(left, e3, eighth);
+//
+//        /* 4 */
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_PlayCont(middle, a4);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_Play(left, a3, eighth);
+//
+//        SPEAKER_PlayCont(right, a4);
+//        SPEAKER_PlayCont(middle, e4);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_Play(left, a3, eighth);
+//
+//        SPEAKER_PlayCont(right, a4);
+//        SPEAKER_PlayCont(middle, e4);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_Play(left, h2, eighth);
+//        SPEAKER_Play(left, c2, eighth);
+//        SPEAKER_Play(left, d3, eighth);
+//
+//        /* 5 */
+//        SPEAKER_PlayCont(right, 0);
+//        SPEAKER_PlayCont(middle, 0);
+//        SPEAKER_Play(left, d2, eighth);
+//        SPEAKER_PlayCont(right, d5);
+//        SPEAKER_PlayCont(middle, f4);
+//        SPEAKER_Play(left, d3, eighth);
+//        SPEAKER_Play(left, d2, eighth);
+//        SPEAKER_PlayCont(right, f5);
+//        SPEAKER_PlayCont(middle, a4);
+//        SPEAKER_Play(left, d3, eighth);
+//
+//        SPEAKER_PlayCont(right, a5);
+//        SPEAKER_PlayCont(middle, c5);
+//        SPEAKER_Play(left, d2, eighth);
+//        SPEAKER_Play(left, d3, eighth);
+//
+//        SPEAKER_PlayCont(right, g5);
+//        SPEAKER_PlayCont(middle, h4);
+//        SPEAKER_Play(left, d2, eighth);
+//        SPEAKER_PlayCont(right, f5);
+//        SPEAKER_PlayCont(middle, a4);
+//        SPEAKER_Play(left, d3, eighth);
+//
+//        /* end */
+//        SPEAKER_PlayCont(right, 0);
+//        SPEAKER_PlayCont(left, 0);
+//        SPEAKER_PlayCont(middle, 0);
+//
+//        /* 6 */
+//        SPEAKER_PlayCont(right, 0);
+//        SPEAKER_PlayCont(middle, 0);
+//        SPEAKER_Play(left, c2, eighth);
+//
+//        SPEAKER_PlayCont(right, e5);
+//        SPEAKER_PlayCont(middle, g4);
+//        SPEAKER_Play(left, c3, eighth);
+//        SPEAKER_Play(left, c2, eighth);
+//
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_PlayCont(middle, e5); /* e4 */
+//        SPEAKER_Play(left, c3, eighth);
+//
+//        SPEAKER_PlayCont(right, e5);
+//        SPEAKER_PlayCont(middle, g4);
+//        SPEAKER_Play(left, c2, eighth);
+//        SPEAKER_Play(left, c3, eighth);
+//
+//        SPEAKER_PlayCont(right, d5);
+//        SPEAKER_PlayCont(middle, f4);
+//        SPEAKER_Play(left, c2, eighth);
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_PlayCont(middle, e4);
+//        SPEAKER_Play(left, c3, eighth);
+//
+//        /* 7 */
+//        SPEAKER_PlayCont(right, h4);
+//        SPEAKER_PlayCont(middle, gis4);
+//        SPEAKER_Play(left, gis2, eighth);
+//        SPEAKER_PlayCont(right, e4);
+//        SPEAKER_PlayCont(middle, 0);
+//        SPEAKER_Play(left, gis3, eighth);
+//
+//        SPEAKER_PlayCont(left, gis2);
+//        SPEAKER_Play(right, gis4, sixteenth);
+//        SPEAKER_Play(right, gis4, sixteenth);
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_Play(left, gis3, eighth);
+//
+//        SPEAKER_PlayCont(right, d5);
+//        SPEAKER_PlayCont(middle, h4);
+//        SPEAKER_Play(left, e2, eighth);
+//        SPEAKER_Play(left, e3, eighth);
+//
+//        SPEAKER_PlayCont(right, e5);
+//        SPEAKER_PlayCont(middle, c4);
+//        SPEAKER_Play(left, e2, eighth);
+//        SPEAKER_Play(left, e3, eighth);
+//
+//        /* 8 */
+//        SPEAKER_PlayCont(right, c5);
+//        SPEAKER_PlayCont(middle, a4);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_Play(left, a3, eighth);
+//
+//        SPEAKER_PlayCont(right, a4);
+//        SPEAKER_PlayCont(middle, e4);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_Play(left, a3, eighth);
+//
+//        SPEAKER_PlayCont(right, a4);
+//        SPEAKER_PlayCont(middle, e4);
+//        SPEAKER_Play(left, a2, eighth);
+//        SPEAKER_Play(left, a3, eighth);
+//        SPEAKER_Play(left, a2, quarter);
+//    }
+//
+//    /* end */
+//    SPEAKER_PlayCont(right, 0);
+//    SPEAKER_PlayCont(left, 0);
+//    SPEAKER_PlayCont(middle, 0);
+//
+//}

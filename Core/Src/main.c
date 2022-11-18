@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -27,6 +28,7 @@
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
+typedef StaticTask_t osStaticThreadDef_t;
 /* USER CODE BEGIN PTD */
 
 /* USER CODE END PTD */
@@ -42,6 +44,37 @@
 
 /* Private variables ---------------------------------------------------------*/
 
+/* Definitions for defaultTask */
+osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "defaultTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for TrackOneTask */
+osThreadId_t TrackOneTaskHandle;
+uint32_t TrackOneBuffer[ 128 ];
+osStaticThreadDef_t TrackOneControlBlock;
+const osThreadAttr_t TrackOneTask_attributes = {
+  .name = "TrackOneTask",
+  .cb_mem = &TrackOneControlBlock,
+  .cb_size = sizeof(TrackOneControlBlock),
+  .stack_mem = &TrackOneBuffer[0],
+  .stack_size = sizeof(TrackOneBuffer),
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for TrackTwoTask */
+osThreadId_t TrackTwoTaskHandle;
+uint32_t TrackTwoBuffer[ 128 ];
+osStaticThreadDef_t TrackTwoControlBlock;
+const osThreadAttr_t TrackTwoTask_attributes = {
+  .name = "TrackTwoTask",
+  .cb_mem = &TrackTwoControlBlock,
+  .cb_size = sizeof(TrackTwoControlBlock),
+  .stack_mem = &TrackTwoBuffer[0],
+  .stack_size = sizeof(TrackTwoBuffer),
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* USER CODE BEGIN PV */
 uint32_t sysTickCounter = 0;
 /* USER CODE END PV */
@@ -51,10 +84,12 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_TIM14_Init(void);
-static void MX_TIM16_Init(void);
-static void MX_TIM17_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
+void StartDefaultTask(void *argument);
+void StartTrackOneTask(void *argument);
+void StartTrackTwoTask(void *argument);
+
 /* USER CODE BEGIN PFP */
 void delay(uint32_t delayMs);
 void print(char* msg);
@@ -78,8 +113,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_SYSCFG);
-  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -90,37 +124,66 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
   /* Otherwise SysTick Interrupt is not triggered */
-  SystemCoreClockUpdate();
-  SysTick_Config(SystemCoreClock / (1000U));
-  NVIC_SetPriority(SysTick_IRQn, 0);
+//  SystemCoreClockUpdate();
+//  SysTick_Config(SystemCoreClock / (1000U));
+//  NVIC_SetPriority(SysTick_IRQn, 0);
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   MX_TIM14_Init();
-  MX_TIM16_Init();
-  MX_TIM17_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-//  HAL_TIM_PWM_Start(&htim17, TIM_CHANNEL_1);
+
   /* USER CODE END 2 */
 
+  /* Init scheduler */
+  osKernelInitialize();
+
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+
+  /* Create the thread(s) */
+  /* creation of defaultTask */
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+
+  /* creation of TrackOneTask */
+  TrackOneTaskHandle = osThreadNew(StartTrackOneTask, NULL, &TrackOneTask_attributes);
+
+  /* creation of TrackTwoTask */
+  TrackTwoTaskHandle = osThreadNew(StartTrackTwoTask, NULL, &TrackTwoTask_attributes);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
+  /* USER CODE BEGIN RTOS_EVENTS */
+  /* add events, ... */
+  /* USER CODE END RTOS_EVENTS */
+
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    LL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
-    print("Hello World!\r\n");
-    delay(500);
-    MUSIC_Play_TetrisRagtime_LeftHand();
-//    MUSIC_Play_ACDC();
-//    SPEAKER_Play(0, 100000, 1000); /* PA4 */
-////    delay(500);
-//    SPEAKER_Play(1, 100000, 1000); /* PB3 */
-////    delay(500);
-//    SPEAKER_Play(2, 100000, 1000); /* PB4 */
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -163,8 +226,13 @@ void SystemClock_Config(void)
   {
 
   }
-  LL_Init1msTick(48000000);
   LL_SetSystemCoreClock(48000000);
+
+   /* Update the time base */
+  if (HAL_InitTick (TICK_INT_PRIORITY) != HAL_OK)
+  {
+    Error_Handler();
+  }
   LL_RCC_SetUSARTClockSource(LL_RCC_USART1_CLKSOURCE_PCLK1);
 }
 
@@ -333,72 +401,6 @@ static void MX_TIM14_Init(void)
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   GPIO_InitStruct.Alternate = LL_GPIO_AF_4;
   LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-}
-
-/**
-  * @brief TIM16 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM16_Init(void)
-{
-
-  /* USER CODE BEGIN TIM16_Init 0 */
-
-  /* USER CODE END TIM16_Init 0 */
-
-  LL_TIM_InitTypeDef TIM_InitStruct = {0};
-
-  /* Peripheral clock enable */
-  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_TIM16);
-
-  /* USER CODE BEGIN TIM16_Init 1 */
-
-  /* USER CODE END TIM16_Init 1 */
-  TIM_InitStruct.Prescaler = 159;
-  TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
-  TIM_InitStruct.Autoreload = 299;
-  TIM_InitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
-  TIM_InitStruct.RepetitionCounter = 0;
-  LL_TIM_Init(TIM16, &TIM_InitStruct);
-  LL_TIM_EnableARRPreload(TIM16);
-  /* USER CODE BEGIN TIM16_Init 2 */
-
-  /* USER CODE END TIM16_Init 2 */
-
-}
-
-/**
-  * @brief TIM17 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM17_Init(void)
-{
-
-  /* USER CODE BEGIN TIM17_Init 0 */
-
-  /* USER CODE END TIM17_Init 0 */
-
-  LL_TIM_InitTypeDef TIM_InitStruct = {0};
-
-  /* Peripheral clock enable */
-  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_TIM17);
-
-  /* USER CODE BEGIN TIM17_Init 1 */
-
-  /* USER CODE END TIM17_Init 1 */
-  TIM_InitStruct.Prescaler = 159;
-  TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
-  TIM_InitStruct.Autoreload = 299;
-  TIM_InitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
-  TIM_InitStruct.RepetitionCounter = 0;
-  LL_TIM_Init(TIM17, &TIM_InitStruct);
-  LL_TIM_EnableARRPreload(TIM17);
-  /* USER CODE BEGIN TIM17_Init 2 */
-
-  /* USER CODE END TIM17_Init 2 */
 
 }
 
@@ -575,6 +577,87 @@ void print(char* msg)
   }
 }
 /* USER CODE END 4 */
+
+/* USER CODE BEGIN Header_StartDefaultTask */
+/**
+  * @brief  Function implementing the defaultTask thread.
+  * @param  argument: Not used
+  * @retval None
+  */
+/* USER CODE END Header_StartDefaultTask */
+void StartDefaultTask(void *argument)
+{
+  /* USER CODE BEGIN 5 */
+  /* Infinite loop */
+  for(;;)
+  {
+    print("Hello World!\r\n");
+    LL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
+    osDelay(1000);
+  }
+  /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_StartTrackOneTask */
+/**
+* @brief Function implementing the TrackOneTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTrackOneTask */
+void StartTrackOneTask(void *argument)
+{
+  /* USER CODE BEGIN StartTrackOneTask */
+  MUSIC_Play_Tetris_LeftHand();
+  MUSIC_Play_TetrisRagtime_LeftHand();
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(500);
+  }
+  /* USER CODE END StartTrackOneTask */
+}
+
+/* USER CODE BEGIN Header_StartTrackTwoTask */
+/**
+* @brief Function implementing the TrackTwoTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTrackTwoTask */
+void StartTrackTwoTask(void *argument)
+{
+  /* USER CODE BEGIN StartTrackTwoTask */
+  MUSIC_Play_Tetris_RightHand();
+  MUSIC_Play_TetrisRagtime_RightHand();
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(500);
+  }
+  /* USER CODE END StartTrackTwoTask */
+}
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM15 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM15) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.
