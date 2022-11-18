@@ -41,9 +41,9 @@ typedef struct
 
 Speaker_t speaker[3] =
 {
-    { TIM15, LL_TIM_CHANNEL_CH1 }, /* PA2 */
     { TIM14, LL_TIM_CHANNEL_CH1 }, /* PA4 */
-    { TIM16, LL_TIM_CHANNEL_CH1 }, /* PA6 */
+    { TIM2, LL_TIM_CHANNEL_CH2 }, /* PB3 */
+    { TIM3, LL_TIM_CHANNEL_CH1 }, /* PB4 */
 };
 
 /* tone length */
