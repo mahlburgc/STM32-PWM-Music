@@ -24,7 +24,6 @@
 /* USER CODE BEGIN Includes */
 #include "string.h"
 #include "music.h"
-#include "speaker.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -123,10 +122,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  /* Otherwise SysTick Interrupt is not triggered */
-//  SystemCoreClockUpdate();
-//  SysTick_Config(SystemCoreClock / (1000U));
-//  NVIC_SetPriority(SysTick_IRQn, 0);
+
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -613,7 +609,7 @@ void StartTrackOneTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(500);
+    osDelay(osWaitForever);
   }
   /* USER CODE END StartTrackOneTask */
 }
@@ -633,7 +629,7 @@ void StartTrackTwoTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(500);
+    osDelay(osWaitForever);
   }
   /* USER CODE END StartTrackTwoTask */
 }

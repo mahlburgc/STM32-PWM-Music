@@ -32,72 +32,97 @@
 #include "music.h"
 #include "speaker.h"
 
-enum
+#define qaurterInitLen 480 /* initial length in ms for quarter note */
+
+/* pwm speaker */
+static Speaker_t left = { TIM14, LL_TIM_CHANNEL_CH1 }; /* PA4 */
+static Speaker_t middle = { TIM2, LL_TIM_CHANNEL_CH2 }; /* PB3 */
+static Speaker_t right = { TIM3, LL_TIM_CHANNEL_CH1 }; /* PB4 */
+
+/* tone length */
+static uint16_t quarter = qaurterInitLen; /* ms */
+static uint16_t full = qaurterInitLen * 4;
+static uint16_t half = qaurterInitLen * 2;
+static uint16_t eighth = qaurterInitLen / 2;
+static uint16_t sixteenth = qaurterInitLen / 4;
+static uint16_t thirtysecond = qaurterInitLen / 8;
+
+static void MUSIC_SetToneLength(uint16_t quarterLengthMs);
+
+/**
+ * @brief Calculate new tone length for given quarter length in ms.
+ */
+static void MUSIC_SetToneLength(uint16_t quarterLengthMs)
 {
-    left = 0,
-    right = 1,
-    middle = 2,
-};
+    assert_param(quarterLengthMs % 8 == 0);
+
+    full = quarterLengthMs * 4;
+    half = quarterLengthMs * 2;
+    quarter = quarterLengthMs;
+    eighth = quarterLengthMs / 2;
+    sixteenth = quarterLengthMs / 4;
+    thirtysecond = quarterLengthMs / 8;
+}
 
 /**
  * @brief Play ACDC - Thunderstruck
  */
 void MUSIC_Play_ACDC(void)
 {
-    SPEAKER_SetToneLength(96);
+    MUSIC_SetToneLength(96);
 
     for (uint8_t i = 0; i < 4; i++)
     {
-       SPEAKER_Play(1, e4, quarter);
-       SPEAKER_Play(1, c4, quarter);
-       SPEAKER_Play(1, g4, quarter);
-       SPEAKER_Play(1, c4, quarter);
+       SPEAKER_Play(left, e4, quarter);
+       SPEAKER_Play(left, c4, quarter);
+       SPEAKER_Play(left, g4, quarter);
+       SPEAKER_Play(left, c4, quarter);
     }
     for (uint8_t i = 0; i < 4; i++)
     {
-       SPEAKER_Play(1, f4, quarter);
-       SPEAKER_Play(1, c4, quarter);
-       SPEAKER_Play(1, gis4, quarter);
-       SPEAKER_Play(1, c4, quarter);
+       SPEAKER_Play(left, f4, quarter);
+       SPEAKER_Play(left, c4, quarter);
+       SPEAKER_Play(left, gis4, quarter);
+       SPEAKER_Play(left, c4, quarter);
     }
     for (uint8_t i = 0; i < 4; i++)
     {
-       SPEAKER_Play(1, e4, quarter);
-       SPEAKER_Play(1, c4, quarter);
-       SPEAKER_Play(1, g4, quarter);
-       SPEAKER_Play(1, c4, quarter);
+       SPEAKER_Play(left, e4, quarter);
+       SPEAKER_Play(left, c4, quarter);
+       SPEAKER_Play(left, g4, quarter);
+       SPEAKER_Play(left, c4, quarter);
     }
     for (uint8_t i = 0; i < 4; i++)
     {
-       SPEAKER_Play(1, f4, quarter);
-       SPEAKER_Play(1, c4, quarter);
-       SPEAKER_Play(1, gis4, quarter);
-       SPEAKER_Play(1, c4, quarter);
+       SPEAKER_Play(left, f4, quarter);
+       SPEAKER_Play(left, c4, quarter);
+       SPEAKER_Play(left, gis4, quarter);
+       SPEAKER_Play(left, c4, quarter);
     }
     for (uint8_t i = 0; i < 2; i++)
     {
-       SPEAKER_Play(1, c5, quarter);
-       SPEAKER_Play(1, c4, quarter);
-       SPEAKER_Play(1, ais4, quarter);
-       SPEAKER_Play(1, c4, quarter);
-       SPEAKER_Play(1, a4, quarter);
-       SPEAKER_Play(1, c4, quarter);
-       SPEAKER_Play(1, ais4, quarter);
-       SPEAKER_Play(1, c4, quarter);
-       SPEAKER_Play(1, a4, quarter);
-       SPEAKER_Play(1, c4, quarter);
-       SPEAKER_Play(1, g4, quarter);
-       SPEAKER_Play(1, c4, quarter);
-       SPEAKER_Play(1, a4, quarter);
-       SPEAKER_Play(1, c4, quarter);
-       SPEAKER_Play(1, f4, quarter);
-       SPEAKER_Play(1, c4, quarter);
+       SPEAKER_Play(left, c5, quarter);
+       SPEAKER_Play(left, c4, quarter);
+       SPEAKER_Play(left, ais4, quarter);
+       SPEAKER_Play(left, c4, quarter);
+       SPEAKER_Play(left, a4, quarter);
+       SPEAKER_Play(left, c4, quarter);
+       SPEAKER_Play(left, ais4, quarter);
+       SPEAKER_Play(left, c4, quarter);
+       SPEAKER_Play(left, a4, quarter);
+       SPEAKER_Play(left, c4, quarter);
+       SPEAKER_Play(left, g4, quarter);
+       SPEAKER_Play(left, c4, quarter);
+       SPEAKER_Play(left, a4, quarter);
+       SPEAKER_Play(left, c4, quarter);
+       SPEAKER_Play(left, f4, quarter);
+       SPEAKER_Play(left, c4, quarter);
        for (uint8_t i = 0; i < 4; i++)
        {
-           SPEAKER_Play(1, g4, quarter);
-           SPEAKER_Play(1, c4, quarter);
-           SPEAKER_Play(1, e4, quarter);
-           SPEAKER_Play(1, c4, quarter);
+           SPEAKER_Play(left, g4, quarter);
+           SPEAKER_Play(left, c4, quarter);
+           SPEAKER_Play(left, e4, quarter);
+           SPEAKER_Play(left, c4, quarter);
        }
     }
 }
@@ -107,21 +132,21 @@ void MUSIC_Play_ACDC(void)
  */
 void MUSIC_Play_SuperMario(void)
 {
-    SPEAKER_SetToneLength(352);
+    MUSIC_SetToneLength(352);
 
-    SPEAKER_Play(1, fret_E12, quarter - 10);
-    SPEAKER_Pause(1, 10);
-    SPEAKER_Play(1, fret_E12, quarter);
-    SPEAKER_Pause(1, quarter);
-    SPEAKER_Play(1, fret_E12, quarter);
-    SPEAKER_Pause(1, quarter);
-    SPEAKER_Play(1, fret_E8, quarter - 10);
-    SPEAKER_Pause(1, 10);
-    SPEAKER_Play(1, fret_E12, quarter * 2 - 10);
-    SPEAKER_Pause(1, 10);
-    SPEAKER_Play(1, fret_E15, quarter * 2);
-    SPEAKER_Pause(1, quarter * 2);
-    SPEAKER_Play(1, fret_H8, quarter * 2);
+    SPEAKER_Play(left, fret_E12, quarter - 10);
+    SPEAKER_Pause(left, 10);
+    SPEAKER_Play(left, fret_E12, quarter);
+    SPEAKER_Pause(left, quarter);
+    SPEAKER_Play(left, fret_E12, quarter);
+    SPEAKER_Pause(left, quarter);
+    SPEAKER_Play(left, fret_E8, quarter - 10);
+    SPEAKER_Pause(left, 10);
+    SPEAKER_Play(left, fret_E12, quarter * 2 - 10);
+    SPEAKER_Pause(left, 10);
+    SPEAKER_Play(left, fret_E15, quarter * 2);
+    SPEAKER_Pause(left, quarter * 2);
+    SPEAKER_Play(left, fret_H8, quarter * 2);
 }
 
 /**
@@ -129,7 +154,7 @@ void MUSIC_Play_SuperMario(void)
  */
 void MUSIC_Play_Tetris_RightHand(void)
 {
-    SPEAKER_SetToneLength(400);
+    MUSIC_SetToneLength(400);
 
     for (uint8_t i = 0; i < 2; i++)
     {
@@ -193,178 +218,122 @@ void MUSIC_Play_Tetris_RightHand(void)
     }
 
     /* 17 */
-    SPEAKER_PlayCont(right, e5, half);
-    SPEAKER_Play(middle, c5, half);
-    SPEAKER_PlayCont(right, c5, half);
-    SPEAKER_Play(middle, a4, half);
+    SPEAKER_PlayTwo(right, e5, middle, c5, half);
+    SPEAKER_PlayTwo(right, c5, middle, a4, half);
 
     /* 18 */
-    SPEAKER_PlayCont(right, d5, half);
-    SPEAKER_Play(middle, h4, half);
-    SPEAKER_PlayCont(right, h4, half);
-    SPEAKER_Play(middle, gis4, half);
+    SPEAKER_PlayTwo(right, d5, middle, h4, half);
+    SPEAKER_PlayTwo(right, h4, middle, gis4, half);
 
     /* 19 */
-    SPEAKER_PlayCont(right, c5, half);
-    SPEAKER_Play(middle, a4, half);
-    SPEAKER_PlayCont(right, a4, half);
-    SPEAKER_Play(middle, e4, half);
+    SPEAKER_PlayTwo(right, c5, middle, a4, half);
+    SPEAKER_PlayTwo(right, a4, middle, e4, half);
 
     /* 20 */
-    SPEAKER_PlayCont(right, gis4, half);
-    SPEAKER_Play(middle, e4, half);
-    SPEAKER_PlayCont(right, h4, half);
-    SPEAKER_Play(middle, gis4, half);
+    SPEAKER_PlayTwo(right, gis4, middle, e4, half);
+    SPEAKER_PlayTwo(right, h4, middle, gis4, half);
 
     /* 21 */
-    SPEAKER_PlayCont(right, e5, half);
-    SPEAKER_Play(middle, c5, half);
-    SPEAKER_PlayCont(right, c5, half);
-    SPEAKER_Play(middle, a4, half);
+    SPEAKER_PlayTwo(right, e5, middle, c5, half);
+    SPEAKER_PlayTwo(right, c5, middle, a4, half);
 
     /* 22 */
-    SPEAKER_PlayCont(right, d5, half);
-    SPEAKER_Play(middle, h4, half);
-    SPEAKER_PlayCont(right, h4, half);
-    SPEAKER_Play(middle, gis4, half);
+    SPEAKER_PlayTwo(right, d5, middle, h4, half);
+    SPEAKER_PlayTwo(right, h4, middle, gis4, half);
 
     /* 23 */
-    SPEAKER_PlayCont(right, c5, quarter);
-    SPEAKER_Play(middle, a4, quarter);
-    SPEAKER_PlayCont(right, e5, quarter);
-    SPEAKER_Play(middle, c5, quarter);
-    SPEAKER_PlayCont(right, a5, quarter);
-    SPEAKER_Play(middle, e5, quarter);
-    SPEAKER_PlayCont(right, a5, quarter);
-    SPEAKER_Play(middle, e5, quarter);
+    SPEAKER_PlayTwo(right, c5, middle, a4, quarter);
+    SPEAKER_PlayTwo(right, e5, middle, c5, quarter);
+    SPEAKER_PlayTwo(right, a5, middle, e5, quarter);
+    SPEAKER_PlayTwo(right, a5, middle, e5, quarter);
 
     /* 24*/
-    SPEAKER_PlayCont(right, gis5, full);
-    SPEAKER_Play(middle, e5, full);
+    SPEAKER_PlayTwo(right, gis5, middle, e5, full);
 
     /*********** third part ********/
 
     for (uint8_t i = 0; i < 2; i++)
     {
         /* 25 */
-        SPEAKER_PlayCont(right, e5, quarter);
-        SPEAKER_Play(middle, h4, quarter);
+        SPEAKER_PlayTwo(right, e5, middle, h4, quarter);
 
-        SPEAKER_PlayCont(right, h4, eighth);
-        SPEAKER_Play(middle, gis4, eighth);
-        SPEAKER_PlayCont(right, c5, eighth);
-        SPEAKER_Play(middle, a4, eighth);
+        SPEAKER_PlayTwo(right, h4, middle, gis4, eighth);
+        SPEAKER_PlayTwo(right, c5, middle, a4, eighth);
 
-        SPEAKER_PlayCont(right, d5, eighth);
-        SPEAKER_Play(middle, h4, eighth);
+        SPEAKER_PlayTwo(right, d5, middle, h4, eighth);
         SPEAKER_Play(right, e5, sixteenth);
         SPEAKER_Play(right, d5, sixteenth);
 
-        SPEAKER_PlayCont(right, c5, eighth);
-        SPEAKER_Play(middle, a4, eighth);
-        SPEAKER_PlayCont(right, h4, eighth);
-        SPEAKER_Play(middle, gis4, eighth);
+        SPEAKER_PlayTwo(right, c5, middle, a4, eighth);
+        SPEAKER_PlayTwo(right, h4, middle, gis4, eighth);
 
         /* 26 */
-        SPEAKER_PlayCont(right, a4, quarter);
-        SPEAKER_Play(middle, e4, quarter);
+        SPEAKER_PlayTwo(right, a4, middle, e4, quarter);
 
-        SPEAKER_PlayCont(right, a4, eighth);
-        SPEAKER_Play(middle, e4, eighth);
-        SPEAKER_PlayCont(right, c5, eighth);
-        SPEAKER_Play(middle, a5, eighth);
+        SPEAKER_PlayTwo(right, a4, middle, e4, eighth);
+        SPEAKER_PlayTwo(right, c5, middle, a5, eighth);
 
-        SPEAKER_PlayCont(right, e5, quarter);
-        SPEAKER_Play(middle, c5, quarter);
+        SPEAKER_PlayTwo(right, e5, middle, c5, quarter);
 
-        SPEAKER_PlayCont(right, d5, eighth);
-        SPEAKER_Play(middle, h4, eighth);
-        SPEAKER_PlayCont(right, c5, eighth);
-        SPEAKER_Play(middle, a4, eighth);
+        SPEAKER_PlayTwo(right, d5, middle, h4, eighth);
+        SPEAKER_PlayTwo(right, c5, middle, a4, eighth);
 
         /* 27 */
-        SPEAKER_PlayCont(right, h4, eighth);
-        SPEAKER_Play(middle, gis4, eighth);
-        SPEAKER_PlayCont(right, e4, eighth);
-        SPEAKER_Play(middle, 0, eighth);
+        SPEAKER_PlayTwo(right, h4, middle, gis4, eighth);
+        SPEAKER_PlayTwo(right, e4, middle, 0, eighth);
 
         SPEAKER_Play(right, gis4, sixteenth);
         SPEAKER_Play(right, gis4, sixteenth);
         SPEAKER_Play(right, c5, eighth);
 
-        SPEAKER_PlayCont(right, d5, quarter);
-        SPEAKER_Play(middle, h4, quarter);
+        SPEAKER_PlayTwo(right, d5, middle, h4, quarter);
 
-        SPEAKER_PlayCont(right, e5, quarter);
-        SPEAKER_Play(middle, c4, quarter);
+        SPEAKER_PlayTwo(right, e5, middle, c4, quarter);
 
         /* 28 */
-        SPEAKER_PlayCont(right, c5, quarter);
-        SPEAKER_Play(middle, a4, quarter);
-        SPEAKER_PlayCont(right, a4, quarter);
-        SPEAKER_Play(middle, e4, quarter);
+        SPEAKER_PlayTwo(right, c5, middle, a4, quarter);
+        SPEAKER_PlayTwo(right, a4, middle, e4, quarter);
 
-        SPEAKER_PlayCont(right, a4, half);
-        SPEAKER_Play(middle, e4, half);
+        SPEAKER_PlayTwo(right, a4, middle, e4, half);
 
         /* 29 */
         SPEAKER_Pause(right, eighth);
-        SPEAKER_PlayCont(right, d5, quarter);
-        SPEAKER_Play(middle, f4, quarter);
-        SPEAKER_PlayCont(right, f5, eighth);
-        SPEAKER_Play(middle, a4, eighth);
+        SPEAKER_PlayTwo(right, d5, middle, f4, quarter);
+        SPEAKER_PlayTwo(right, f5, middle, a4, eighth);
 
-        SPEAKER_PlayCont(right, a5, quarter);
-        SPEAKER_Play(middle, c5, quarter);
-        SPEAKER_PlayCont(right, g5, eighth);
-        SPEAKER_Play(middle, h4, eighth);
-        SPEAKER_PlayCont(right, f5, eighth);
-        SPEAKER_Play(middle, a4, eighth);
+        SPEAKER_PlayTwo(right, a5, middle, c5, quarter);
+        SPEAKER_PlayTwo(right, g5, middle, h4, eighth);
+        SPEAKER_PlayTwo(right, f5, middle, a4, eighth);
 
         /* 30 */
         SPEAKER_Pause(right, eighth);
-        SPEAKER_PlayCont(right, e5, quarter);
-        SPEAKER_Play(middle, g4, quarter);
-        SPEAKER_PlayCont(right, c5, eighth);
-        SPEAKER_Play(middle, e5, eighth); /* e4 */
+        SPEAKER_PlayTwo(right, e5, middle, g4, quarter);
+        SPEAKER_PlayTwo(right, c5, middle, e5, eighth); /* e4 */
 
-        SPEAKER_PlayCont(right, e5, quarter);
-        SPEAKER_Play(middle, g4, quarter);
-        SPEAKER_PlayCont(right, d5, eighth);
-        SPEAKER_Play(middle, f4, eighth);
-        SPEAKER_PlayCont(right, c5, eighth);
-        SPEAKER_Play(middle, e4, eighth);
+        SPEAKER_PlayTwo(right, e5, middle, g4, quarter);
+        SPEAKER_PlayTwo(right, d5, middle, f4, eighth);
+        SPEAKER_PlayTwo(right, c5, middle, e4, eighth);
 
         /* 31 */
-        SPEAKER_PlayCont(right, h4, eighth);
-        SPEAKER_Play(middle, gis4, eighth);
-        SPEAKER_PlayCont(right, e4, eighth);
-        SPEAKER_Play(middle, 0, eighth);
+        SPEAKER_PlayTwo(right, h4, middle, gis4, eighth);
+        SPEAKER_PlayTwo(right, e4, middle, 0, eighth);
 
         SPEAKER_Play(right, gis4, sixteenth);
         SPEAKER_Play(right, gis4, sixteenth);
         SPEAKER_Play(right, c5, eighth);
 
-        SPEAKER_PlayCont(right, d5, quarter);
-        SPEAKER_Play(middle, h4, quarter);
+        SPEAKER_PlayTwo(right, d5, middle, h4, quarter);
 
-        SPEAKER_PlayCont(right, e5, quarter);
-        SPEAKER_Play(middle, c4, quarter);
+        SPEAKER_PlayTwo(right, e5, middle, c4, quarter);
 
         /* 32 */
-        SPEAKER_PlayCont(right, c5, quarter);
-        SPEAKER_Play(middle, a4, quarter);
-        SPEAKER_PlayCont(right, a4, quarter);
-        SPEAKER_Play(middle, e4, quarter);
+        SPEAKER_PlayTwo(right, c5, middle, a4, quarter);
+        SPEAKER_PlayTwo(right, a4, middle, e4, quarter);
 
-        SPEAKER_PlayCont(right, a4, half);
-        SPEAKER_Play(middle, e4, half);
+        SPEAKER_PlayTwo(right, a4, middle, e4, half);
     }
 
     /* end */
-    SPEAKER_PlayCont(right, 0, 0);
-    SPEAKER_PlayCont(left, 0, 0);
-    SPEAKER_PlayCont(middle, 0, 0);
 }
 
 
@@ -373,7 +342,7 @@ void MUSIC_Play_Tetris_RightHand(void)
  */
 void MUSIC_Play_Tetris_LeftHand(void)
 {
-    SPEAKER_SetToneLength(400);
+    MUSIC_SetToneLength(400);
 
     /*********** first part ********/
     /* 1 */
@@ -644,11 +613,7 @@ void MUSIC_Play_Tetris_LeftHand(void)
         SPEAKER_Play(left, a3, eighth);
         SPEAKER_Play(left, a2, quarter);
     }
-
     /* end */
-    SPEAKER_PlayCont(right, 0, 0);
-    SPEAKER_PlayCont(left, 0, 0);
-    SPEAKER_PlayCont(middle, 0, 0);
 }
 
 /**
@@ -656,8 +621,7 @@ void MUSIC_Play_Tetris_LeftHand(void)
  */
 void MUSIC_Play_TetrisRagtime_RightHand(void)
 {
-    SPEAKER_SetToneLength(480);
-    SPEAKER_SetStaccato(25);
+    MUSIC_SetToneLength(480);
 
 #if 1
     /* 1 */
@@ -665,62 +629,62 @@ void MUSIC_Play_TetrisRagtime_RightHand(void)
 
     /* 2 */
     SPEAKER_Pause(right, quarter);
-    SPEAKER_PlayStaccato(right, h4, eighth);
-    SPEAKER_PlayStaccato(right, c5, eighth);
-    SPEAKER_PlayStaccato(right, d5, quarter);
-    SPEAKER_PlayStaccato(right, c5, eighth);
-    SPEAKER_PlayStaccato(right, h4, eighth);
+    SPEAKER_PlayStac(right, h4, eighth);
+    SPEAKER_PlayStac(right, c5, eighth);
+    SPEAKER_PlayStac(right, d5, quarter);
+    SPEAKER_PlayStac(right, c5, eighth);
+    SPEAKER_PlayStac(right, h4, eighth);
 
     /* 3 */
-    SPEAKER_PlayStaccato(right, a4, quarter);
-    SPEAKER_PlayStaccato(right, a4, eighth);
-    SPEAKER_PlayStaccato(right, c5, sixteenth);
-    SPEAKER_PlayStaccato(right, c5, sixteenth);
-    SPEAKER_PlayStaccato(right, e5, eighth - 25);
+    SPEAKER_PlayStac(right, a4, quarter);
+    SPEAKER_PlayStac(right, a4, eighth);
+    SPEAKER_PlayStac(right, c5, sixteenth);
+    SPEAKER_PlayStac(right, c5, sixteenth);
+    SPEAKER_PlayStac(right, e5, eighth - 25);
     SPEAKER_Pause(right, 25);
-    SPEAKER_PlayStaccato(right, e5, eighth - 25);
+    SPEAKER_PlayStac(right, e5, eighth - 25);
     SPEAKER_Pause(right, 25);
-    SPEAKER_PlayStaccato(right, d5, eighth);
-    SPEAKER_PlayStaccato(right, c5, eighth);
+    SPEAKER_PlayStac(right, d5, eighth);
+    SPEAKER_PlayStac(right, c5, eighth);
 
     /* 4 */
-    SPEAKER_PlayStaccato(right, h4, quarter + eighth);
-    SPEAKER_PlayStaccato(right, c5, eighth);
-    SPEAKER_PlayStaccato(right, d5, quarter);
-    SPEAKER_PlayStaccato(right, e5, quarter);
+    SPEAKER_PlayStac(right, h4, quarter + eighth);
+    SPEAKER_PlayStac(right, c5, eighth);
+    SPEAKER_PlayStac(right, d5, quarter);
+    SPEAKER_PlayStac(right, e5, quarter);
 
     /* 5 */
-    SPEAKER_PlayStaccato(right, c5, quarter);
-    SPEAKER_PlayStaccato(right, a4, quarter);
-    SPEAKER_PlayStaccato(right, a4, half);
+    SPEAKER_PlayStac(right, c5, quarter);
+    SPEAKER_PlayStac(right, a4, quarter);
+    SPEAKER_PlayStac(right, a4, half);
 
     /* 6 */
     SPEAKER_Pause(right, eighth);
-    SPEAKER_PlayStaccato(right, d5, quarter);
-    SPEAKER_PlayStaccato(right, f5, eighth);
-    SPEAKER_PlayStaccato(right, a5, quarter);
-    SPEAKER_PlayStaccato(right, g5, eighth);
-    SPEAKER_PlayStaccato(right, f5, eighth);
+    SPEAKER_PlayStac(right, d5, quarter);
+    SPEAKER_PlayStac(right, f5, eighth);
+    SPEAKER_PlayStac(right, a5, quarter);
+    SPEAKER_PlayStac(right, g5, eighth);
+    SPEAKER_PlayStac(right, f5, eighth);
 
     /* 7 */
     SPEAKER_Pause(right, eighth);
-    SPEAKER_PlayStaccato(right, e5, quarter);
-    SPEAKER_PlayStaccato(right, c5, eighth);
-    SPEAKER_PlayStaccato(right, e5, quarter);
-    SPEAKER_PlayStaccato(right, d5, eighth);
-    SPEAKER_PlayStaccato(right, c5, eighth);
+    SPEAKER_PlayStac(right, e5, quarter);
+    SPEAKER_PlayStac(right, c5, eighth);
+    SPEAKER_PlayStac(right, e5, quarter);
+    SPEAKER_PlayStac(right, d5, eighth);
+    SPEAKER_PlayStac(right, c5, eighth);
 
     /* 8 */
-    SPEAKER_PlayStaccato(right, h4, quarter + eighth);
-    SPEAKER_PlayStaccato(right, c5, eighth);
-    SPEAKER_PlayStaccato(right, d5, quarter);
+    SPEAKER_PlayStac(right, h4, quarter + eighth);
+    SPEAKER_PlayStac(right, c5, eighth);
+    SPEAKER_PlayStac(right, d5, quarter);
     SPEAKER_Play(right, e5, quarter - thirtysecond);
     SPEAKER_Play(right, d5, thirtysecond);
 
     /* 9 */
-    SPEAKER_PlayStaccato(right, c5, quarter);
-    SPEAKER_PlayStaccato(right, a4, quarter);
-    SPEAKER_PlayStaccato(right, a4, quarter);
+    SPEAKER_PlayStac(right, c5, quarter);
+    SPEAKER_PlayStac(right, a4, quarter);
+    SPEAKER_PlayStac(right, a4, quarter);
     SPEAKER_Pause(right, quarter);
 
     /*****************************************/
@@ -729,65 +693,65 @@ void MUSIC_Play_TetrisRagtime_RightHand(void)
     /* 10 */
     SPEAKER_Play(right, dis5, thirtysecond);
     SPEAKER_Play(right, e5, quarter - thirtysecond);
-    SPEAKER_PlayStaccato(right, h4, eighth);
-    SPEAKER_PlayStaccato(right, c5, eighth);
-    SPEAKER_PlayStaccato(right, d5, quarter);
-    SPEAKER_PlayStaccato(right, c5, eighth);
-    SPEAKER_PlayStaccato(right, h4, eighth);
+    SPEAKER_PlayStac(right, h4, eighth);
+    SPEAKER_PlayStac(right, c5, eighth);
+    SPEAKER_PlayStac(right, d5, quarter);
+    SPEAKER_PlayStac(right, c5, eighth);
+    SPEAKER_PlayStac(right, h4, eighth);
 
     /* 11 */
-    SPEAKER_PlayStaccato(right, a4, quarter - sixteenth);
+    SPEAKER_PlayStac(right, a4, quarter - sixteenth);
     SPEAKER_Play(right, e4, sixteenth);
     SPEAKER_Play(right, a4, sixteenth);
     SPEAKER_Play(right, e4, sixteenth);
     SPEAKER_Play(right, c5, sixteenth);
     SPEAKER_Play(right, e4, sixteenth);
-    SPEAKER_PlayStaccato(right, e5, eighth - 25);
+    SPEAKER_PlayStac(right, e5, eighth - 25);
     SPEAKER_Pause(right, 25);
-    SPEAKER_PlayStaccato(right, e5, eighth - 25);
+    SPEAKER_PlayStac(right, e5, eighth - 25);
     SPEAKER_Pause(right, 25);
-    SPEAKER_PlayStaccato(right, d5, eighth);
-    SPEAKER_PlayStaccato(right, c5, eighth);
+    SPEAKER_PlayStac(right, d5, eighth);
+    SPEAKER_PlayStac(right, c5, eighth);
 
     /* 12 */
-    SPEAKER_PlayStaccato(right, h4, quarter + eighth);
-    SPEAKER_PlayStaccato(right, c5, eighth);
-    SPEAKER_PlayStaccato(right, d5, quarter);
-    SPEAKER_PlayStaccato(right, e5, quarter);
+    SPEAKER_PlayStac(right, h4, quarter + eighth);
+    SPEAKER_PlayStac(right, c5, eighth);
+    SPEAKER_PlayStac(right, d5, quarter);
+    SPEAKER_PlayStac(right, e5, quarter);
 
     /* 13 */
-    SPEAKER_PlayStaccato(right, c5, quarter);
-    SPEAKER_PlayStaccato(right, a4, quarter);
-    SPEAKER_PlayStaccato(right, a4, half);
+    SPEAKER_PlayStac(right, c5, quarter);
+    SPEAKER_PlayStac(right, a4, quarter);
+    SPEAKER_PlayStac(right, a4, half);
 
     /* 14 */
     SPEAKER_Pause(right, eighth);
-    SPEAKER_PlayStaccato(right, d5, quarter);
-    SPEAKER_PlayStaccato(right, f5, eighth);
-    SPEAKER_PlayStaccato(right, a5, quarter);
-    SPEAKER_PlayStaccato(right, g5, eighth);
-    SPEAKER_PlayStaccato(right, f5, eighth);
+    SPEAKER_PlayStac(right, d5, quarter);
+    SPEAKER_PlayStac(right, f5, eighth);
+    SPEAKER_PlayStac(right, a5, quarter);
+    SPEAKER_PlayStac(right, g5, eighth);
+    SPEAKER_PlayStac(right, f5, eighth);
 
     /* 15 */
     SPEAKER_Pause(right, eighth);
-    SPEAKER_PlayStaccato(right, e5, quarter);
-    SPEAKER_PlayStaccato(right, c5, eighth);
-    SPEAKER_PlayStaccato(right, e5, quarter);
-    SPEAKER_PlayStaccato(right, d5, eighth);
-    SPEAKER_PlayStaccato(right, c5, eighth);
+    SPEAKER_PlayStac(right, e5, quarter);
+    SPEAKER_PlayStac(right, c5, eighth);
+    SPEAKER_PlayStac(right, e5, quarter);
+    SPEAKER_PlayStac(right, d5, eighth);
+    SPEAKER_PlayStac(right, c5, eighth);
 
     /* 16 */
-    SPEAKER_PlayStaccato(right, h4, quarter + eighth);
-    SPEAKER_PlayStaccato(right, c5, eighth);
-    SPEAKER_PlayStaccato(right, d5, quarter);
+    SPEAKER_PlayStac(right, h4, quarter + eighth);
+    SPEAKER_PlayStac(right, c5, eighth);
+    SPEAKER_PlayStac(right, d5, quarter);
     SPEAKER_Play(right, e5, quarter - thirtysecond);
     SPEAKER_Play(right, d5, thirtysecond);
 
 #endif
     /* 17 */
-    SPEAKER_PlayStaccato(right, c5, quarter);
-    SPEAKER_PlayStaccato(right, a4, quarter);
-    SPEAKER_PlayStaccato(right, a4, quarter);
+    SPEAKER_PlayStac(right, c5, quarter);
+    SPEAKER_PlayStac(right, a4, quarter);
+    SPEAKER_PlayStac(right, a4, quarter);
 
     SPEAKER_Play(right, e5, sixteenth);
     SPEAKER_Pause(right, sixteenth);
@@ -800,21 +764,21 @@ void MUSIC_Play_TetrisRagtime_RightHand(void)
     SPEAKER_Pause(right, sixteenth);
     SPEAKER_Pause(right, eighth);
     SPEAKER_Pause(right, quarter);
-    SPEAKER_PlayStaccato(right, dis5, sixteenth);
-    SPEAKER_PlayStaccato(right, d5, sixteenth);
-    SPEAKER_PlayStaccato(right, c5, eighth);
-    SPEAKER_PlayStaccato(right, d5, eighth);
-    SPEAKER_PlayStaccato(right, c5, sixteenth);
+    SPEAKER_PlayStac(right, dis5, sixteenth);
+    SPEAKER_PlayStac(right, d5, sixteenth);
+    SPEAKER_PlayStac(right, c5, eighth);
+    SPEAKER_PlayStac(right, d5, eighth);
+    SPEAKER_PlayStac(right, c5, sixteenth);
     SPEAKER_Play(right, dis5, thirtysecond);
     SPEAKER_Play(right, e5, thirtysecond + eighth);
 
     /* 18 */
     /* eighth for above*/
-    SPEAKER_PlayStaccato(right, c5, eighth);
-    SPEAKER_PlayStaccato(right, a4, sixteenth);
-    SPEAKER_PlayStaccato(right, g4, eighth);
-    SPEAKER_PlayStaccato(right, a4, quarter);
-    SPEAKER_PlayStaccato(right, dis5, sixteenth);
+    SPEAKER_PlayStac(right, c5, eighth);
+    SPEAKER_PlayStac(right, a4, sixteenth);
+    SPEAKER_PlayStac(right, g4, eighth);
+    SPEAKER_PlayStac(right, a4, quarter);
+    SPEAKER_PlayStac(right, dis5, sixteenth);
     SPEAKER_Play(right, e5, sixteenth);
     SPEAKER_Play(right, g5, sixteenth);
     SPEAKER_Play(right, a5, eighth);
@@ -827,7 +791,7 @@ void MUSIC_Play_TetrisRagtime_RightHand(void)
     SPEAKER_Play(right, e5, sixteenth);
     SPEAKER_Play(right, g5, sixteenth);
     SPEAKER_Play(right, a5, sixteenth);
-    SPEAKER_PlayStaccato(right, c6, eighth + sixteenth);
+    SPEAKER_PlayStac(right, c6, eighth + sixteenth);
     SPEAKER_Pause(right, sixteenth);
 
     SPEAKER_Play(right, dis5, sixteenth);
@@ -837,83 +801,83 @@ void MUSIC_Play_TetrisRagtime_RightHand(void)
     SPEAKER_Play(right, g5, sixteenth);
 
     /* 20 */
-    SPEAKER_PlayStaccato(right, c6, eighth);
-    SPEAKER_PlayStaccato(right, a5, sixteenth);
-    SPEAKER_PlayStaccato(right, g5, sixteenth);
-    SPEAKER_PlayStaccato(right, a5, sixteenth);
-    SPEAKER_PlayStaccato(right, g5, sixteenth);
-    SPEAKER_PlayStaccato(right, dis5, sixteenth);
-    SPEAKER_PlayStaccato(right, d5, sixteenth);
-    SPEAKER_PlayStaccato(right, a5, sixteenth);
-    SPEAKER_PlayStaccato(right, dis5, sixteenth);
-    SPEAKER_PlayStaccato(right, d5, sixteenth);
-    SPEAKER_PlayStaccato(right, c5, sixteenth);
-    SPEAKER_PlayStaccato(right, a4, sixteenth);
-    SPEAKER_PlayStaccato(right, e4, sixteenth);
-    SPEAKER_PlayStaccato(right, c5, sixteenth);
-    SPEAKER_PlayStaccato(right, a4, sixteenth);
+    SPEAKER_PlayStac(right, c6, eighth);
+    SPEAKER_PlayStac(right, a5, sixteenth);
+    SPEAKER_PlayStac(right, g5, sixteenth);
+    SPEAKER_PlayStac(right, a5, sixteenth);
+    SPEAKER_PlayStac(right, g5, sixteenth);
+    SPEAKER_PlayStac(right, dis5, sixteenth);
+    SPEAKER_PlayStac(right, d5, sixteenth);
+    SPEAKER_PlayStac(right, a5, sixteenth);
+    SPEAKER_PlayStac(right, dis5, sixteenth);
+    SPEAKER_PlayStac(right, d5, sixteenth);
+    SPEAKER_PlayStac(right, c5, sixteenth);
+    SPEAKER_PlayStac(right, a4, sixteenth);
+    SPEAKER_PlayStac(right, e4, sixteenth);
+    SPEAKER_PlayStac(right, c5, sixteenth);
+    SPEAKER_PlayStac(right, a4, sixteenth);
 
     /* 21 */
-    SPEAKER_PlayStaccato(right, g5, sixteenth);
-    SPEAKER_PlayStaccato(right, f5, sixteenth);
-    SPEAKER_PlayStaccato(right, d5, sixteenth);
-    SPEAKER_PlayStaccato(right, a4, sixteenth);
-    SPEAKER_PlayStaccato(right, f4, sixteenth);
-    SPEAKER_PlayStaccato(right, cis5, sixteenth);
-    SPEAKER_PlayStaccato(right, d5, sixteenth);
-    SPEAKER_PlayStaccato(right, f5, sixteenth);
-    SPEAKER_PlayStaccato(right, a5, sixteenth);
-    SPEAKER_PlayStaccato(right, gis5, sixteenth);
-    SPEAKER_PlayStaccato(right, g5, sixteenth);
-    SPEAKER_PlayStaccato(right, fis5, sixteenth);
-    SPEAKER_PlayStaccato(right, f5, sixteenth);
-    SPEAKER_PlayStaccato(right, e5, sixteenth);
-    SPEAKER_PlayStaccato(right, cis5, sixteenth);
-    SPEAKER_PlayStaccato(right, d5, sixteenth);
+    SPEAKER_PlayStac(right, g5, sixteenth);
+    SPEAKER_PlayStac(right, f5, sixteenth);
+    SPEAKER_PlayStac(right, d5, sixteenth);
+    SPEAKER_PlayStac(right, a4, sixteenth);
+    SPEAKER_PlayStac(right, f4, sixteenth);
+    SPEAKER_PlayStac(right, cis5, sixteenth);
+    SPEAKER_PlayStac(right, d5, sixteenth);
+    SPEAKER_PlayStac(right, f5, sixteenth);
+    SPEAKER_PlayStac(right, a5, sixteenth);
+    SPEAKER_PlayStac(right, gis5, sixteenth);
+    SPEAKER_PlayStac(right, g5, sixteenth);
+    SPEAKER_PlayStac(right, fis5, sixteenth);
+    SPEAKER_PlayStac(right, f5, sixteenth);
+    SPEAKER_PlayStac(right, e5, sixteenth);
+    SPEAKER_PlayStac(right, cis5, sixteenth);
+    SPEAKER_PlayStac(right, d5, sixteenth);
 
     /* 22 */
-    SPEAKER_PlayStaccato(right, e5, sixteenth);
+    SPEAKER_PlayStac(right, e5, sixteenth);
     SPEAKER_Pause(right, sixteenth);
-    SPEAKER_PlayStaccato(right, dis4, sixteenth);
-    SPEAKER_PlayStaccato(right, e4, sixteenth);
-    SPEAKER_PlayStaccato(right, f4, sixteenth);
-    SPEAKER_PlayStaccato(right, e4, sixteenth);
-    SPEAKER_PlayStaccato(right, f4, sixteenth);
-    SPEAKER_PlayStaccato(right, a4, sixteenth);
-    SPEAKER_PlayStaccato(right, e5, quarter);
+    SPEAKER_PlayStac(right, dis4, sixteenth);
+    SPEAKER_PlayStac(right, e4, sixteenth);
+    SPEAKER_PlayStac(right, f4, sixteenth);
+    SPEAKER_PlayStac(right, e4, sixteenth);
+    SPEAKER_PlayStac(right, f4, sixteenth);
+    SPEAKER_PlayStac(right, a4, sixteenth);
+    SPEAKER_PlayStac(right, e5, quarter);
     SPEAKER_Play(right, c5, eighth);
     SPEAKER_Play(right, h4, sixteenth);
     SPEAKER_Play(right, a4, sixteenth);
 
     /* 22 */
-    SPEAKER_PlayStaccato(right, dis5, sixteenth);
-    SPEAKER_PlayStaccato(right, e5, sixteenth);
-    SPEAKER_PlayStaccato(right, dis5, sixteenth);
-    SPEAKER_PlayStaccato(right, e5, sixteenth);
-    SPEAKER_PlayStaccato(right, c5, sixteenth);
-    SPEAKER_PlayStaccato(right, a4, sixteenth);
-    SPEAKER_PlayStaccato(right, dis5, sixteenth);
-    SPEAKER_PlayStaccato(right, e5, sixteenth);
-    SPEAKER_PlayStaccato(right, dis5, sixteenth);
-    SPEAKER_PlayStaccato(right, e5, sixteenth);
-    SPEAKER_PlayStaccato(right, c5, sixteenth);
-    SPEAKER_PlayStaccato(right, a4, sixteenth);
-    SPEAKER_PlayStaccato(right, dis5, sixteenth);
-    SPEAKER_PlayStaccato(right, e5, sixteenth);
-    SPEAKER_PlayStaccato(right, c5, sixteenth);
-    SPEAKER_PlayStaccato(right, gis4, sixteenth);
+    SPEAKER_PlayStac(right, dis5, sixteenth);
+    SPEAKER_PlayStac(right, e5, sixteenth);
+    SPEAKER_PlayStac(right, dis5, sixteenth);
+    SPEAKER_PlayStac(right, e5, sixteenth);
+    SPEAKER_PlayStac(right, c5, sixteenth);
+    SPEAKER_PlayStac(right, a4, sixteenth);
+    SPEAKER_PlayStac(right, dis5, sixteenth);
+    SPEAKER_PlayStac(right, e5, sixteenth);
+    SPEAKER_PlayStac(right, dis5, sixteenth);
+    SPEAKER_PlayStac(right, e5, sixteenth);
+    SPEAKER_PlayStac(right, c5, sixteenth);
+    SPEAKER_PlayStac(right, a4, sixteenth);
+    SPEAKER_PlayStac(right, dis5, sixteenth);
+    SPEAKER_PlayStac(right, e5, sixteenth);
+    SPEAKER_PlayStac(right, c5, sixteenth);
+    SPEAKER_PlayStac(right, gis4, sixteenth);
 
     /* 23 */
-    SPEAKER_PlayStaccato(right, a4, sixteenth);
-    SPEAKER_PlayStaccato(right, c5, sixteenth);
-    SPEAKER_PlayStaccato(right, e5, sixteenth);
-    SPEAKER_PlayStaccato(right, a5, sixteenth);
-    SPEAKER_PlayStaccato(right, f5, sixteenth);
-    SPEAKER_PlayStaccato(right, d5, sixteenth);
-    SPEAKER_PlayStaccato(right, h4, sixteenth);
-    SPEAKER_PlayStaccato(right, gis4, sixteenth);
-    SPEAKER_PlayStaccato(right, a4, quarter);
-    SPEAKER_PlayStaccato(right, a5, eighth);
+    SPEAKER_PlayStac(right, a4, sixteenth);
+    SPEAKER_PlayStac(right, c5, sixteenth);
+    SPEAKER_PlayStac(right, e5, sixteenth);
+    SPEAKER_PlayStac(right, a5, sixteenth);
+    SPEAKER_PlayStac(right, f5, sixteenth);
+    SPEAKER_PlayStac(right, d5, sixteenth);
+    SPEAKER_PlayStac(right, h4, sixteenth);
+    SPEAKER_PlayStac(right, gis4, sixteenth);
+    SPEAKER_PlayStac(right, a4, quarter);
+    SPEAKER_PlayStac(right, a5, eighth);
     SPEAKER_Pause(right, eighth);
 }
 
@@ -922,24 +886,23 @@ void MUSIC_Play_TetrisRagtime_RightHand(void)
  */
 void MUSIC_Play_TetrisRagtime_LeftHand(void)
 {
-    SPEAKER_SetToneLength(480);
-    SPEAKER_SetStaccato(25);
+    MUSIC_SetToneLength(480);
 
 #if 1
     SPEAKER_Play(left, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, e2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, e2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     /* 2 */
@@ -948,66 +911,66 @@ void MUSIC_Play_TetrisRagtime_LeftHand(void)
 
     /* 3 */
     SPEAKER_Play(left, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, e2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, e2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     /* 4 */
     SPEAKER_Play(left, gis2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, e2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, e4, sixteenth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, e4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, h2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, e2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     /* 5 */
     SPEAKER_Play(left, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, e2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, e2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     /* 6 */
     SPEAKER_Play(left, d2, eighth);
-    SPEAKER_PlayTwo(left, f3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, f3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, a2, eighth);
-    SPEAKER_PlayTwo(left, f3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, f3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, d2, eighth);
-    SPEAKER_PlayTwo(left, f3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, f3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, g2, eighth);
@@ -1015,15 +978,15 @@ void MUSIC_Play_TetrisRagtime_LeftHand(void)
 
     /* 7 */
     SPEAKER_Play(left, a2, eighth);
-    SPEAKER_PlayTwo(left, e3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, e2, eighth);
-    SPEAKER_PlayTwo(left, e3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, a2, eighth);
-    SPEAKER_PlayTwo(left, e3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, d2, eighth);
@@ -1031,861 +994,304 @@ void MUSIC_Play_TetrisRagtime_LeftHand(void)
 
     /* 8 */
     SPEAKER_Play(left, e2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, h2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, e4, sixteenth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, e4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, gis2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, e2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     /* 9 */
     SPEAKER_Play(left, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4,sixteenth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4,sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, e2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     SPEAKER_Play(left, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
-    SPEAKER_PlayTwo(left, gis1, middle, gis2, eighth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, gis1, middle, gis2, eighth);
 
 
     /***************************************************/
 
     /* 10 */
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, e4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, e4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, h1, middle, h2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, e4, sixteenth);
+    SPEAKER_PlayTwoStac(left, h1, middle, h2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, e4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, e4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, e4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, gis1, middle, gis2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, gis1, middle, gis2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     /* 11 */
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     /* 12 */
-    SPEAKER_PlayTwo(left, gis1, middle, gis2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, gis1, middle, gis2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, e4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, e4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, h1, middle, h2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, h1, middle, h2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e2, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e2, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     /* 13 */
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     /* 14 */
-    SPEAKER_PlayTwo(left, d1, middle, d2, eighth);
-    SPEAKER_PlayTwo(left, f3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, d1, middle, d2, eighth);
+    SPEAKER_PlayTwoStac(left, f3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
-    SPEAKER_PlayTwo(left, f3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, f3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, d1, middle, d2, eighth);
-    SPEAKER_PlayTwo(left, f3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, d1, middle, d2, eighth);
+    SPEAKER_PlayTwoStac(left, f3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, g1, middle, g2, eighth);
-    SPEAKER_PlayTwo(left, gis1, middle, gis2, eighth);
+    SPEAKER_PlayTwoStac(left, g1, middle, g2, eighth);
+    SPEAKER_PlayTwoStac(left, gis1, middle, gis2, eighth);
 
     /* 15 */
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
-    SPEAKER_PlayTwo(left, e3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, e3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, e3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, e3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
-    SPEAKER_PlayTwo(left, e3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, e3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, d1, middle, d2, eighth);
-    SPEAKER_PlayTwo(left, dis1, middle, dis2, eighth);
+    SPEAKER_PlayTwoStac(left, d1, middle, d2, eighth);
+    SPEAKER_PlayTwoStac(left, dis1, middle, dis2, eighth);
 
     /* 16 */
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, h1, middle, h2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, e4, sixteenth);
+    SPEAKER_PlayTwoStac(left, h1, middle, h2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, e4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, gis1, middle, gis2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, gis1, middle, gis2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 #endif
 
 #if 1
     /* 17 */
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4,sixteenth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4,sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
     SPEAKER_Pause(left, eighth);
 
     SPEAKER_Pause(left, quarter);
     /************ Solo part *************/
 
     /* 18 */
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, e4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, e4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, h1, middle, h2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, e4, sixteenth);
+    SPEAKER_PlayTwoStac(left, h1, middle, h2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, e4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, e4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, e4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, gis1, middle, gis2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, gis1, middle, gis2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     /* 19 */
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     /* 20 */
-    SPEAKER_PlayTwo(left, gis1, middle, gis2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, gis1, middle, gis2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, e4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, e4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, h1, middle, h2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, h1, middle, h2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e2, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e2, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     /* 21 */
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     /* 22 */
-    SPEAKER_PlayTwo(left, d1, middle, d2, eighth);
-    SPEAKER_PlayTwo(left, f3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, d1, middle, d2, eighth);
+    SPEAKER_PlayTwoStac(left, f3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
-    SPEAKER_PlayTwo(left, f3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, f3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, d1, middle, d2, eighth);
-    SPEAKER_PlayTwo(left, f3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, d1, middle, d2, eighth);
+    SPEAKER_PlayTwoStac(left, f3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, g1, middle, g2, eighth);
-    SPEAKER_PlayTwo(left, gis1, middle, gis2, eighth);
+    SPEAKER_PlayTwoStac(left, g1, middle, g2, eighth);
+    SPEAKER_PlayTwoStac(left, gis1, middle, gis2, eighth);
 
     /* 23 */
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
-    SPEAKER_PlayTwo(left, e3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, e3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, e3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, e3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
-    SPEAKER_PlayTwo(left, e3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, e3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, d1, middle, d2, eighth);
-    SPEAKER_PlayTwo(left, dis1, middle, dis2, eighth);
+    SPEAKER_PlayTwoStac(left, d1, middle, d2, eighth);
+    SPEAKER_PlayTwoStac(left, dis1, middle, dis2, eighth);
 
     /* 24 */
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, h1, middle, h2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, e4, sixteenth);
+    SPEAKER_PlayTwoStac(left, h1, middle, h2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, e4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, gis1, middle, gis2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, d4, sixteenth);
+    SPEAKER_PlayTwoStac(left, gis1, middle, gis2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, d4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, gis3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, gis3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
     /* 25 */
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4,sixteenth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4,sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, e1, middle, e2, eighth);
-    SPEAKER_PlayTwo(left, a3, middle, c4, sixteenth);
+    SPEAKER_PlayTwoStac(left, e1, middle, e2, eighth);
+    SPEAKER_PlayTwoStac(left, a3, middle, c4, sixteenth);
     SPEAKER_Pause(left, sixteenth);
 
-    SPEAKER_PlayTwo(left, a1, middle, a2, eighth);
+    SPEAKER_PlayTwoStac(left, a1, middle, a2, eighth);
     SPEAKER_Pause(left, eighth);
 
-    SPEAKER_PlayTwo(left, a2, middle, c5, eighth);
+    SPEAKER_PlayTwoStac(left, a2, middle, c5, eighth);
     SPEAKER_Pause(left, eighth);
 #endif
 }
-
-///**
-// * @brief Play Tetris
-// */
-//void SPEAKER_Play_Tetris(void)
-//{
-//    const uint16_t duration = 400; /* for quarter note */
-//
-//    const uint16_t full = duration * 4;
-//    const uint16_t half = duration * 2;
-//    const uint16_t quarter = duration;
-//    const uint16_t eighth = duration / 2;
-//    const uint16_t sixteenth = duration / 4;
-//
-//    enum
-//    {
-//        left = 0,
-//        right = 1,
-//        middle = 2,
-//    };
-//
-//    /* 1 */
-//    SPEAKER_Play(right, e5, quarter);
-//    SPEAKER_Play(right, h4, eighth);
-//    SPEAKER_Play(right, c5, eighth);
-//    SPEAKER_Play(right, d5, eighth);
-//    SPEAKER_Play(right, e5, sixteenth);
-//    SPEAKER_Play(right, d5, sixteenth);
-//    SPEAKER_Play(right, c5, eighth);
-//    SPEAKER_Play(right, h4, eighth);
-//
-//    /* 2 */
-//    SPEAKER_Play(right, a4, quarter);
-//    SPEAKER_Play(right, a4, eighth);
-//    SPEAKER_Play(right, c5, eighth);
-//    SPEAKER_Play(right, e5, quarter);
-//    SPEAKER_Play(right, d5, eighth);
-//    SPEAKER_Play(right, c5, eighth);
-//
-//    /* 3 */
-//    SPEAKER_Play(right, h4, quarter);
-//    SPEAKER_Play(right, h4, eighth);
-//    SPEAKER_Play(right, c5, eighth);
-//    SPEAKER_Play(right, d5, quarter);
-//    SPEAKER_Play(right, e5, quarter);
-//
-//    /* 4 */
-//    SPEAKER_Play(right, c5, quarter);
-//    SPEAKER_Play(right, a4, quarter);
-//    SPEAKER_Play(right, a4, half);
-//
-//    /* 5 */
-//    SPEAKER_Play(right, 0, eighth);
-//    SPEAKER_Play(right, d5, quarter);
-//    SPEAKER_Play(right, f5, eighth);
-//    SPEAKER_Play(right, a5, quarter);
-//    SPEAKER_Play(right, g5, eighth);
-//    SPEAKER_Play(right, f5, eighth);
-//
-//    /* 6 */
-//    SPEAKER_Play(right, 0, eighth);
-//    SPEAKER_Play(right, e5, quarter);
-//    SPEAKER_Play(right, c5, eighth);
-//    SPEAKER_Play(right, e5, quarter);
-//    SPEAKER_Play(right, d5, eighth);
-//    SPEAKER_Play(right, c5, eighth);
-//
-//    /* 7 */
-//    SPEAKER_Play(right, h4, quarter);
-//    SPEAKER_Play(right, h4, eighth);
-//    SPEAKER_Play(right, c5, eighth);
-//    SPEAKER_Play(right, d5, quarter);
-//    SPEAKER_Play(right, e5, quarter);
-//
-//    /* 8 */
-//    SPEAKER_Play(right, c5, quarter);
-//    SPEAKER_Play(right, a4, quarter);
-//    SPEAKER_Play(right, a4, half);
-//
-//    for (uint8_t i = 0; i < 1; i++)
-//    {
-//        /* 1 */
-//        SPEAKER_PlayCont(right, e5);
-//        SPEAKER_Play(left, e2, eighth);
-//        SPEAKER_Play(left, e3, eighth);
-//
-//        SPEAKER_PlayCont(right, h4);
-//        SPEAKER_Play(left, e2, eighth);
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_Play(left, e3, eighth);
-//
-//        SPEAKER_PlayCont(right, d5);
-//        SPEAKER_Play(left, e2, eighth);
-//        SPEAKER_PlayCont(left, e3);
-//        SPEAKER_Play(right, e5, sixteenth);
-//        SPEAKER_Play(right, d5, sixteenth);
-//
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_Play(left, e2, eighth);
-//        SPEAKER_PlayCont(right, h4);
-//        SPEAKER_Play(left, e3, eighth);
-//
-//        /* 2 */
-//        SPEAKER_PlayCont(right, a4);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_Play(left, a3, eighth);
-//
-//        SPEAKER_PlayCont(right, a4);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_Play(left, a3, eighth);
-//
-//        SPEAKER_PlayCont(right, e5);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_Play(left, a3, eighth);
-//
-//        SPEAKER_PlayCont(right, d5);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_Play(left, a3, eighth);
-//
-//        /* 3 */
-//        SPEAKER_PlayCont(right, h4);
-//        SPEAKER_Play(left, gis2, eighth);
-//        SPEAKER_Play(left, gis3, eighth);
-//
-//        SPEAKER_PlayCont(right, h4);
-//        SPEAKER_Play(left, gis2, eighth);
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_Play(left, gis3, eighth);
-//
-//
-//        SPEAKER_PlayCont(right, d5);
-//        SPEAKER_Play(left, e2, eighth);
-//        SPEAKER_Play(left, e3, eighth);
-//
-//        SPEAKER_PlayCont(right, e5);
-//        SPEAKER_Play(left, e2, eighth);
-//        SPEAKER_Play(left, e3, eighth);
-//
-//        /* 4 */
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_Play(left, a3, eighth);
-//
-//        SPEAKER_PlayCont(right, a4);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_Play(left, a3, eighth);
-//
-//        SPEAKER_PlayCont(right, a4);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_Play(left, h2, eighth);
-//        SPEAKER_Play(left, c2, eighth);
-//        SPEAKER_Play(left, d3, eighth);
-//
-//        /* 5 */
-//        SPEAKER_PlayCont(right, 0);
-//        SPEAKER_Play(left, d2, eighth);
-//        SPEAKER_PlayCont(right, d5);
-//        SPEAKER_Play(left, d3, eighth);
-//        SPEAKER_Play(left, d2, eighth);
-//        SPEAKER_PlayCont(right, f5);
-//        SPEAKER_Play(left, d3, eighth);
-//
-//        SPEAKER_PlayCont(right, a5);
-//        SPEAKER_Play(left, d2, eighth);
-//        SPEAKER_Play(left, d3, eighth);
-//
-//        SPEAKER_PlayCont(right, g5);
-//        SPEAKER_Play(left, d2, eighth);
-//        SPEAKER_PlayCont(right, f5);
-//        SPEAKER_Play(left, d3, eighth);
-//
-//        /* 6 */
-//        SPEAKER_PlayCont(right, 0);
-//        SPEAKER_Play(left, c2, eighth);
-//
-//        SPEAKER_PlayCont(right, e5);
-//        SPEAKER_Play(left, c3, eighth);
-//        SPEAKER_Play(left, c2, eighth);
-//
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_Play(left, c3, eighth);
-//
-//        SPEAKER_PlayCont(right, e5);
-//        SPEAKER_Play(left, c2, eighth);
-//        SPEAKER_Play(left, c3, eighth);
-//
-//        SPEAKER_PlayCont(right, d5);
-//        SPEAKER_Play(left, c2, eighth);
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_Play(left, c3, eighth);
-//
-//        /* 7 */
-//        SPEAKER_PlayCont(right, h4);
-//        SPEAKER_Play(left, g2, eighth);
-//        SPEAKER_Play(left, g3, eighth);
-//
-//        SPEAKER_PlayCont(right, h4);
-//        SPEAKER_Play(left, g2, eighth);
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_Play(left, g3, eighth);
-//
-//        SPEAKER_PlayCont(right, d5);
-//        SPEAKER_Play(left, e2, eighth);
-//        SPEAKER_Play(left, e3, eighth);
-//
-//        SPEAKER_PlayCont(right, e5);
-//        SPEAKER_Play(left, e2, eighth);
-//        SPEAKER_Play(left, e3, eighth);
-//
-//        /* 8 */
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_Play(left, a3, eighth);
-//
-//        SPEAKER_PlayCont(right, a4);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_Play(left, a3, eighth);
-//
-//        SPEAKER_PlayCont(right, a4);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_Play(left, a3, eighth);
-//        SPEAKER_Play(left, a2, quarter);
-//    }
-//
-//    /* 1 */
-//    SPEAKER_PlayCont(right, e5);
-//    SPEAKER_PlayCont(middle, c5);
-//    SPEAKER_Play(left, a2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//    SPEAKER_Play(left, a2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//
-//    /* 2 */
-//    SPEAKER_PlayCont(right, c5);
-//    SPEAKER_PlayCont(middle, a4);
-//    SPEAKER_Play(left, a2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//    SPEAKER_Play(left, a2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//
-//    /* 3 */
-//    SPEAKER_PlayCont(right, d5);
-//    SPEAKER_PlayCont(middle, h4);
-//    SPEAKER_Play(left, h2, eighth);
-//    SPEAKER_Play(left, d3, eighth);
-//    SPEAKER_Play(left, h2, eighth);
-//    SPEAKER_Play(left, d3, eighth);
-//
-//    /* 4 */
-//    SPEAKER_PlayCont(right, h4);
-//    SPEAKER_PlayCont(middle, gis4);
-//    SPEAKER_Play(left, h2, eighth);
-//    SPEAKER_Play(left, d3, eighth);
-//    SPEAKER_Play(left, h2, eighth);
-//    SPEAKER_Play(left, d3, eighth);
-//
-//    /* 5 */
-//    SPEAKER_PlayCont(right, c5);
-//    SPEAKER_PlayCont(middle, a4);
-//    SPEAKER_Play(left, a2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//    SPEAKER_Play(left, a2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//
-//    /* 6 */
-//    SPEAKER_PlayCont(right, a4);
-//    SPEAKER_PlayCont(middle, e4);
-//    SPEAKER_Play(left, a2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//    SPEAKER_Play(left, a2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//
-//    /* 7 */
-//    SPEAKER_PlayCont(right, gis4);
-//    SPEAKER_PlayCont(middle, e4);
-//    SPEAKER_Play(left, gis2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//    SPEAKER_Play(left, gis2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//
-//    /* 8 */
-//    SPEAKER_PlayCont(right, h4);
-//    SPEAKER_PlayCont(middle, gis4);
-//    SPEAKER_Play(left, gis2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//    SPEAKER_Play(left, gis2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//
-//    /* 9 */
-//    SPEAKER_PlayCont(right, e5);
-//    SPEAKER_PlayCont(middle, c5);
-//    SPEAKER_Play(left, a2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//    SPEAKER_Play(left, a2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//
-//    /* 10 */
-//    SPEAKER_PlayCont(right, c5);
-//    SPEAKER_PlayCont(middle, a4);
-//    SPEAKER_Play(left, a2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//    SPEAKER_Play(left, a2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//
-//    /* 11 */
-//    SPEAKER_PlayCont(right, d5);
-//    SPEAKER_PlayCont(middle, h4);
-//    SPEAKER_Play(left, h2, eighth);
-//    SPEAKER_Play(left, d3, eighth);
-//    SPEAKER_Play(left, h2, eighth);
-//    SPEAKER_Play(left, d3, eighth);
-//
-//    /* 12 */
-//    SPEAKER_PlayCont(right, h4);
-//    SPEAKER_PlayCont(middle, gis4);
-//    SPEAKER_Play(left, h2, eighth);
-//    SPEAKER_Play(left, d3, eighth);
-//    SPEAKER_Play(left, h2, eighth);
-//    SPEAKER_Play(left, d3, eighth);
-//
-//    /* 13 */
-//    SPEAKER_PlayCont(right, c5);
-//    SPEAKER_PlayCont(middle, a4);
-//    SPEAKER_Play(left, a2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//    SPEAKER_PlayCont(right, e5);
-//    SPEAKER_PlayCont(middle, c5);
-//    SPEAKER_Play(left, a2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//
-//    /* 14 */
-//    SPEAKER_PlayCont(right, a5);
-//    SPEAKER_PlayCont(middle, e5);
-//    SPEAKER_Play(left, a2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//    SPEAKER_PlayCont(right, a5);
-//    SPEAKER_PlayCont(middle, e5);
-//    SPEAKER_Play(left, a2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//
-//    /* 15 */
-//    SPEAKER_PlayCont(right, gis5);
-//    SPEAKER_PlayCont(middle, e5);
-//    SPEAKER_Play(left, gis2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//    SPEAKER_Play(left, gis2, eighth);
-//    SPEAKER_Play(left, e3, eighth);
-//
-//    /* 16 */
-//    SPEAKER_Play(left, gis2, quarter - 10);
-//    SPEAKER_Pause(left, 10);
-//    SPEAKER_Play(left, gis2, quarter - 10);
-//    SPEAKER_Pause(left, 10);
-//
-//    for (uint8_t i = 0; i < 2; i++)
-//    {
-//        /* 1 */
-//        SPEAKER_PlayCont(right, e5);
-//        SPEAKER_PlayCont(middle, h4);
-//        SPEAKER_Play(left, e2, eighth);
-//        SPEAKER_Play(left, e3, eighth);
-//
-//        SPEAKER_PlayCont(right, h4);
-//        SPEAKER_PlayCont(middle, gis4);
-//        SPEAKER_Play(left, e2, eighth);
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_PlayCont(middle, a4);
-//        SPEAKER_Play(left, e3, eighth);
-//
-//        SPEAKER_PlayCont(right, d5);
-//        SPEAKER_PlayCont(middle, h4);
-//        SPEAKER_Play(left, e2, eighth);
-//        SPEAKER_PlayCont(left, e3);
-//        SPEAKER_Play(right, e5, sixteenth);
-//        SPEAKER_PlayCont(middle, 0);
-//        SPEAKER_Play(right, d5, sixteenth);
-//        SPEAKER_PlayCont(middle, 0);
-//
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_PlayCont(middle, a4);
-//        SPEAKER_Play(left, e2, eighth);
-//        SPEAKER_PlayCont(right, h4);
-//        SPEAKER_PlayCont(middle, gis4);
-//        SPEAKER_Play(left, e3, eighth);
-//
-//        /* 2 */
-//        SPEAKER_PlayCont(right, a4);
-//        SPEAKER_PlayCont(middle, e4);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_Play(left, a3, eighth);
-//
-//        SPEAKER_PlayCont(right, a4);
-//        SPEAKER_PlayCont(middle, e4);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_PlayCont(middle, a5);
-//        SPEAKER_Play(left, a3, eighth);
-//
-//        SPEAKER_PlayCont(right, e5);
-//        SPEAKER_PlayCont(middle, c5);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_Play(left, a3, eighth);
-//
-//        SPEAKER_PlayCont(right, d5);
-//        SPEAKER_PlayCont(middle, h4);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_PlayCont(middle, a4);
-//        SPEAKER_Play(left, a3, eighth);
-//
-//        /* 3 */
-//        SPEAKER_PlayCont(right, h4);
-//        SPEAKER_PlayCont(middle, gis4);
-//        SPEAKER_Play(left, gis2, eighth);
-//        SPEAKER_PlayCont(right, e4);
-//        SPEAKER_PlayCont(middle, 0);
-//        SPEAKER_Play(left, gis3, eighth);
-//
-//        SPEAKER_PlayCont(left, gis2);
-//        SPEAKER_Play(right, gis4, sixteenth);
-//        SPEAKER_Play(right, gis4, sixteenth);
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_Play(left, gis3, eighth);
-//
-//        SPEAKER_PlayCont(right, d5);
-//        SPEAKER_PlayCont(middle, h4);
-//        SPEAKER_Play(left, e2, eighth);
-//        SPEAKER_Play(left, e3, eighth);
-//
-//        SPEAKER_PlayCont(right, e5);
-//        SPEAKER_PlayCont(middle, c4);
-//        SPEAKER_Play(left, e2, eighth);
-//        SPEAKER_Play(left, e3, eighth);
-//
-//        /* 4 */
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_PlayCont(middle, a4);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_Play(left, a3, eighth);
-//
-//        SPEAKER_PlayCont(right, a4);
-//        SPEAKER_PlayCont(middle, e4);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_Play(left, a3, eighth);
-//
-//        SPEAKER_PlayCont(right, a4);
-//        SPEAKER_PlayCont(middle, e4);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_Play(left, h2, eighth);
-//        SPEAKER_Play(left, c2, eighth);
-//        SPEAKER_Play(left, d3, eighth);
-//
-//        /* 5 */
-//        SPEAKER_PlayCont(right, 0);
-//        SPEAKER_PlayCont(middle, 0);
-//        SPEAKER_Play(left, d2, eighth);
-//        SPEAKER_PlayCont(right, d5);
-//        SPEAKER_PlayCont(middle, f4);
-//        SPEAKER_Play(left, d3, eighth);
-//        SPEAKER_Play(left, d2, eighth);
-//        SPEAKER_PlayCont(right, f5);
-//        SPEAKER_PlayCont(middle, a4);
-//        SPEAKER_Play(left, d3, eighth);
-//
-//        SPEAKER_PlayCont(right, a5);
-//        SPEAKER_PlayCont(middle, c5);
-//        SPEAKER_Play(left, d2, eighth);
-//        SPEAKER_Play(left, d3, eighth);
-//
-//        SPEAKER_PlayCont(right, g5);
-//        SPEAKER_PlayCont(middle, h4);
-//        SPEAKER_Play(left, d2, eighth);
-//        SPEAKER_PlayCont(right, f5);
-//        SPEAKER_PlayCont(middle, a4);
-//        SPEAKER_Play(left, d3, eighth);
-//
-//        /* end */
-//        SPEAKER_PlayCont(right, 0);
-//        SPEAKER_PlayCont(left, 0);
-//        SPEAKER_PlayCont(middle, 0);
-//
-//        /* 6 */
-//        SPEAKER_PlayCont(right, 0);
-//        SPEAKER_PlayCont(middle, 0);
-//        SPEAKER_Play(left, c2, eighth);
-//
-//        SPEAKER_PlayCont(right, e5);
-//        SPEAKER_PlayCont(middle, g4);
-//        SPEAKER_Play(left, c3, eighth);
-//        SPEAKER_Play(left, c2, eighth);
-//
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_PlayCont(middle, e5); /* e4 */
-//        SPEAKER_Play(left, c3, eighth);
-//
-//        SPEAKER_PlayCont(right, e5);
-//        SPEAKER_PlayCont(middle, g4);
-//        SPEAKER_Play(left, c2, eighth);
-//        SPEAKER_Play(left, c3, eighth);
-//
-//        SPEAKER_PlayCont(right, d5);
-//        SPEAKER_PlayCont(middle, f4);
-//        SPEAKER_Play(left, c2, eighth);
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_PlayCont(middle, e4);
-//        SPEAKER_Play(left, c3, eighth);
-//
-//        /* 7 */
-//        SPEAKER_PlayCont(right, h4);
-//        SPEAKER_PlayCont(middle, gis4);
-//        SPEAKER_Play(left, gis2, eighth);
-//        SPEAKER_PlayCont(right, e4);
-//        SPEAKER_PlayCont(middle, 0);
-//        SPEAKER_Play(left, gis3, eighth);
-//
-//        SPEAKER_PlayCont(left, gis2);
-//        SPEAKER_Play(right, gis4, sixteenth);
-//        SPEAKER_Play(right, gis4, sixteenth);
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_Play(left, gis3, eighth);
-//
-//        SPEAKER_PlayCont(right, d5);
-//        SPEAKER_PlayCont(middle, h4);
-//        SPEAKER_Play(left, e2, eighth);
-//        SPEAKER_Play(left, e3, eighth);
-//
-//        SPEAKER_PlayCont(right, e5);
-//        SPEAKER_PlayCont(middle, c4);
-//        SPEAKER_Play(left, e2, eighth);
-//        SPEAKER_Play(left, e3, eighth);
-//
-//        /* 8 */
-//        SPEAKER_PlayCont(right, c5);
-//        SPEAKER_PlayCont(middle, a4);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_Play(left, a3, eighth);
-//
-//        SPEAKER_PlayCont(right, a4);
-//        SPEAKER_PlayCont(middle, e4);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_Play(left, a3, eighth);
-//
-//        SPEAKER_PlayCont(right, a4);
-//        SPEAKER_PlayCont(middle, e4);
-//        SPEAKER_Play(left, a2, eighth);
-//        SPEAKER_Play(left, a3, eighth);
-//        SPEAKER_Play(left, a2, quarter);
-//    }
-//
-//    /* end */
-//    SPEAKER_PlayCont(right, 0);
-//    SPEAKER_PlayCont(left, 0);
-//    SPEAKER_PlayCont(middle, 0);
-//
-//}
