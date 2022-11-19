@@ -33,6 +33,8 @@
 #include "main.h"
 #include "cmsis_os.h"
 
+#define SPEAKER_Delay(x) osDelay(x)
+
 #define staccatoLenPercent 10 /* staccato note duration reduced by x percent */
 
 static void SPEAKER_SetFrequency(Speaker_t speaker, uint32_t frequency);
@@ -95,14 +97,14 @@ void SPEAKER_Play(Speaker_t speaker, uint32_t frequency, uint32_t duration)
         LL_TIM_EnableCounter(speaker.timer);
         LL_TIM_CC_EnableChannel(speaker.timer, speaker.channel);
 
-        osDelay(duration);
+        SPEAKER_Delay(duration);
 
         LL_TIM_CC_DisableChannel(speaker.timer, speaker.channel);
         LL_TIM_DisableCounter(speaker.timer);
     }
     else /* pause */
     {
-        osDelay(duration);
+        SPEAKER_Delay(duration);
     }
 }
 
@@ -135,7 +137,7 @@ void SPEAKER_Pause(Speaker_t speaker, uint32_t duration)
 {
     LL_TIM_CC_DisableChannel(speaker.timer, speaker.channel);
     LL_TIM_DisableCounter(speaker.timer);
-    osDelay(duration);
+    SPEAKER_Delay(duration);
 }
 
 /**
@@ -167,12 +169,12 @@ void SPEAKER_PlayTwoStac(Speaker_t speaker1, uint32_t freq1, Speaker_t speaker2,
     SPEAKER_PlayCont(speaker1, freq1);
     SPEAKER_PlayCont(speaker2, freq2);
 
-    osDelay(duration - staccatoLength);
+    SPEAKER_Delay(duration - staccatoLength);
 
     SPEAKER_Stop(speaker1);
     SPEAKER_Stop(speaker2);
 
-    osDelay(staccatoLength);
+    SPEAKER_Delay(staccatoLength);
 }
 
 /**
@@ -184,7 +186,7 @@ void SPEAKER_PlayTwo(Speaker_t speaker1, uint32_t freq1, Speaker_t speaker2, uin
     SPEAKER_PlayCont(speaker1, freq1);
     SPEAKER_PlayCont(speaker2, freq2);
 
-    osDelay(duration);
+    SPEAKER_Delay(duration);
 
     SPEAKER_Stop(speaker1);
     SPEAKER_Stop(speaker2);
