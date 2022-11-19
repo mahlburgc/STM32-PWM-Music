@@ -606,6 +606,8 @@ void StartTrackOneTask(void *argument)
   /* USER CODE BEGIN StartTrackOneTask */
   MUSIC_Play_Tetris_LeftHand();
   MUSIC_Play_TetrisRagtime_LeftHand();
+  MUSIC_Play_ACDC();
+  MUSIC_Play_SuperMario();
   /* Infinite loop */
   for(;;)
   {

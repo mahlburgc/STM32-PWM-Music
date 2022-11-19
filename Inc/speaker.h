@@ -2,7 +2,7 @@
  * @file           : speaker.h
  * @author         : Christian Mahlburg
  * @date           : 16.11.2022
- * @brief          : Module to control up to 3 speaker with pwm.
+ * @brief          : Module to control various speaker with pwm.
  *
  ********************************************************************************
  * MIT License

@@ -32,36 +32,35 @@
 #include "music.h"
 #include "speaker.h"
 
-#define qaurterInitLen 480 /* initial length in ms for quarter note */
+#define defaultBPM 120 /* initial beats per minute */
+#define defaultQuarter ((60 * 1000) / defaultBPM)
 
 /* pwm speaker */
 static Speaker_t left = { TIM14, LL_TIM_CHANNEL_CH1 }; /* PA4 */
 static Speaker_t middle = { TIM2, LL_TIM_CHANNEL_CH2 }; /* PB3 */
 static Speaker_t right = { TIM3, LL_TIM_CHANNEL_CH1 }; /* PB4 */
 
-/* tone length */
-static uint16_t quarter = qaurterInitLen; /* ms */
-static uint16_t full = qaurterInitLen * 4;
-static uint16_t half = qaurterInitLen * 2;
-static uint16_t eighth = qaurterInitLen / 2;
-static uint16_t sixteenth = qaurterInitLen / 4;
-static uint16_t thirtysecond = qaurterInitLen / 8;
+/* tone length in ms*/
+static uint32_t quarter = defaultQuarter;
+static uint32_t full = defaultQuarter * 4;
+static uint32_t half = defaultQuarter * 2;
+static uint32_t eighth = defaultQuarter / 2;
+static uint32_t sixteenth = defaultQuarter / 4;
+static uint32_t thirtysecond = defaultQuarter / 8;
 
-static void MUSIC_SetToneLength(uint16_t quarterLengthMs);
+static void MUSIC_SetBPM(uint32_t quarterLengthMs);
 
 /**
- * @brief Calculate new tone length for given quarter length in ms.
+ * @brief Calculate new tone length in ms for given bpm.
  */
-static void MUSIC_SetToneLength(uint16_t quarterLengthMs)
+static void MUSIC_SetBPM(uint32_t bpm)
 {
-    assert_param(quarterLengthMs % 8 == 0);
-
-    full = quarterLengthMs * 4;
-    half = quarterLengthMs * 2;
-    quarter = quarterLengthMs;
-    eighth = quarterLengthMs / 2;
-    sixteenth = quarterLengthMs / 4;
-    thirtysecond = quarterLengthMs / 8;
+    quarter = (60 * 1000) / bpm;
+    full = quarter * 4;
+    half = quarter * 2;
+    eighth = quarter / 2;
+    sixteenth = quarter / 4;
+    thirtysecond = quarter / 8;
 }
 
 /**
@@ -69,60 +68,60 @@ static void MUSIC_SetToneLength(uint16_t quarterLengthMs)
  */
 void MUSIC_Play_ACDC(void)
 {
-    MUSIC_SetToneLength(96);
+  MUSIC_SetBPM(134);
 
     for (uint8_t i = 0; i < 4; i++)
     {
-       SPEAKER_Play(left, e4, quarter);
-       SPEAKER_Play(left, c4, quarter);
-       SPEAKER_Play(left, g4, quarter);
-       SPEAKER_Play(left, c4, quarter);
+       SPEAKER_Play(left, e4, sixteenth);
+       SPEAKER_Play(left, c4, sixteenth);
+       SPEAKER_Play(left, g4, sixteenth);
+       SPEAKER_Play(left, c4, sixteenth);
     }
     for (uint8_t i = 0; i < 4; i++)
     {
-       SPEAKER_Play(left, f4, quarter);
-       SPEAKER_Play(left, c4, quarter);
-       SPEAKER_Play(left, gis4, quarter);
-       SPEAKER_Play(left, c4, quarter);
+       SPEAKER_Play(left, f4, sixteenth);
+       SPEAKER_Play(left, c4, sixteenth);
+       SPEAKER_Play(left, gis4, sixteenth);
+       SPEAKER_Play(left, c4, sixteenth);
     }
     for (uint8_t i = 0; i < 4; i++)
     {
-       SPEAKER_Play(left, e4, quarter);
-       SPEAKER_Play(left, c4, quarter);
-       SPEAKER_Play(left, g4, quarter);
-       SPEAKER_Play(left, c4, quarter);
+       SPEAKER_Play(left, e4, sixteenth);
+       SPEAKER_Play(left, c4, sixteenth);
+       SPEAKER_Play(left, g4, sixteenth);
+       SPEAKER_Play(left, c4, sixteenth);
     }
     for (uint8_t i = 0; i < 4; i++)
     {
-       SPEAKER_Play(left, f4, quarter);
-       SPEAKER_Play(left, c4, quarter);
-       SPEAKER_Play(left, gis4, quarter);
-       SPEAKER_Play(left, c4, quarter);
+       SPEAKER_Play(left, f4, sixteenth);
+       SPEAKER_Play(left, c4, sixteenth);
+       SPEAKER_Play(left, gis4, sixteenth);
+       SPEAKER_Play(left, c4, sixteenth);
     }
     for (uint8_t i = 0; i < 2; i++)
     {
-       SPEAKER_Play(left, c5, quarter);
-       SPEAKER_Play(left, c4, quarter);
-       SPEAKER_Play(left, ais4, quarter);
-       SPEAKER_Play(left, c4, quarter);
-       SPEAKER_Play(left, a4, quarter);
-       SPEAKER_Play(left, c4, quarter);
-       SPEAKER_Play(left, ais4, quarter);
-       SPEAKER_Play(left, c4, quarter);
-       SPEAKER_Play(left, a4, quarter);
-       SPEAKER_Play(left, c4, quarter);
-       SPEAKER_Play(left, g4, quarter);
-       SPEAKER_Play(left, c4, quarter);
-       SPEAKER_Play(left, a4, quarter);
-       SPEAKER_Play(left, c4, quarter);
-       SPEAKER_Play(left, f4, quarter);
-       SPEAKER_Play(left, c4, quarter);
+       SPEAKER_Play(left, c5, sixteenth);
+       SPEAKER_Play(left, c4, sixteenth);
+       SPEAKER_Play(left, ais4, sixteenth);
+       SPEAKER_Play(left, c4, sixteenth);
+       SPEAKER_Play(left, a4, sixteenth);
+       SPEAKER_Play(left, c4, sixteenth);
+       SPEAKER_Play(left, ais4, sixteenth);
+       SPEAKER_Play(left, c4, sixteenth);
+       SPEAKER_Play(left, a4, sixteenth);
+       SPEAKER_Play(left, c4, sixteenth);
+       SPEAKER_Play(left, g4, sixteenth);
+       SPEAKER_Play(left, c4, sixteenth);
+       SPEAKER_Play(left, a4, sixteenth);
+       SPEAKER_Play(left, c4, sixteenth);
+       SPEAKER_Play(left, f4, sixteenth);
+       SPEAKER_Play(left, c4, sixteenth);
        for (uint8_t i = 0; i < 4; i++)
        {
-           SPEAKER_Play(left, g4, quarter);
-           SPEAKER_Play(left, c4, quarter);
-           SPEAKER_Play(left, e4, quarter);
-           SPEAKER_Play(left, c4, quarter);
+           SPEAKER_Play(left, g4, sixteenth);
+           SPEAKER_Play(left, c4, sixteenth);
+           SPEAKER_Play(left, e4, sixteenth);
+           SPEAKER_Play(left, c4, sixteenth);
        }
     }
 }
@@ -132,21 +131,19 @@ void MUSIC_Play_ACDC(void)
  */
 void MUSIC_Play_SuperMario(void)
 {
-    MUSIC_SetToneLength(352);
+    MUSIC_SetBPM(180);
 
-    SPEAKER_Play(left, fret_E12, quarter - 10);
-    SPEAKER_Pause(left, 10);
-    SPEAKER_Play(left, fret_E12, quarter);
+    SPEAKER_PlayStac(left, fret_E12, eighth);
+    SPEAKER_PlayStac(left, fret_E12, eighth);
+    SPEAKER_Pause(left, eighth);
+    SPEAKER_PlayStac(left, fret_E12, eighth);
+    SPEAKER_Pause(left, eighth);
+    SPEAKER_PlayStac(left, fret_E8, eighth);
+    SPEAKER_PlayStac(left, fret_E12, quarter);
+    SPEAKER_Play(left, fret_E15, quarter);
     SPEAKER_Pause(left, quarter);
-    SPEAKER_Play(left, fret_E12, quarter);
+    SPEAKER_Play(left, fret_H8, quarter);
     SPEAKER_Pause(left, quarter);
-    SPEAKER_Play(left, fret_E8, quarter - 10);
-    SPEAKER_Pause(left, 10);
-    SPEAKER_Play(left, fret_E12, quarter * 2 - 10);
-    SPEAKER_Pause(left, 10);
-    SPEAKER_Play(left, fret_E15, quarter * 2);
-    SPEAKER_Pause(left, quarter * 2);
-    SPEAKER_Play(left, fret_H8, quarter * 2);
 }
 
 /**
@@ -154,7 +151,7 @@ void MUSIC_Play_SuperMario(void)
  */
 void MUSIC_Play_Tetris_RightHand(void)
 {
-    MUSIC_SetToneLength(400);
+    MUSIC_SetBPM(150);
 
     for (uint8_t i = 0; i < 2; i++)
     {
@@ -342,7 +339,7 @@ void MUSIC_Play_Tetris_RightHand(void)
  */
 void MUSIC_Play_Tetris_LeftHand(void)
 {
-    MUSIC_SetToneLength(400);
+    MUSIC_SetBPM(150);
 
     /*********** first part ********/
     /* 1 */
@@ -621,7 +618,7 @@ void MUSIC_Play_Tetris_LeftHand(void)
  */
 void MUSIC_Play_TetrisRagtime_RightHand(void)
 {
-    MUSIC_SetToneLength(480);
+    MUSIC_SetBPM(125);
 
 #if 1
     /* 1 */
@@ -886,7 +883,7 @@ void MUSIC_Play_TetrisRagtime_RightHand(void)
  */
 void MUSIC_Play_TetrisRagtime_LeftHand(void)
 {
-    MUSIC_SetToneLength(480);
+    MUSIC_SetBPM(125);
 
 #if 1
     SPEAKER_Play(left, a2, eighth);
