@@ -36,18 +36,16 @@
 #include "stdint.h"
 #include "stm32f0xx_ll_tim.h"
 
+/**
+ * @brief Speaker definition with timer and CC-Channel.
+ */
 typedef struct
 {
     TIM_TypeDef* timer;
     uint32_t channel;
 } Speaker_t;
 
-void SPEAKER_Play(Speaker_t speaker, uint32_t frequency, uint32_t duration);
-void SPEAKER_PlayStac(Speaker_t nr, uint32_t frequency, uint32_t duration);
-void SPEAKER_PlayTwo(Speaker_t speaker1, uint32_t freq1, Speaker_t speaker2, uint32_t freq2, uint32_t duration);
-void SPEAKER_PlayTwoStac(Speaker_t speaker1, uint32_t freq1, Speaker_t speaker2, uint32_t freq2, uint32_t duration);
-void SPEAKER_PlayCont(Speaker_t speaker, uint32_t frequency);
-void SPEAKER_Pause(Speaker_t speaker, uint32_t duration);
-void SPEAKER_Stop(Speaker_t speaker);
+void SPEAKER_Start(Speaker_t sp, uint32_t freq_cHz);
+void SPEAKER_Stop(Speaker_t sp);
 
 #endif /* SPEAKER_H_ */

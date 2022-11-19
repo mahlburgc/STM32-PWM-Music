@@ -23,7 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "string.h"
-#include "music.h"
+#include "songs.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -604,10 +604,11 @@ void StartDefaultTask(void *argument)
 void StartTrackOneTask(void *argument)
 {
   /* USER CODE BEGIN StartTrackOneTask */
-  MUSIC_Play_Tetris_LeftHand();
-  MUSIC_Play_TetrisRagtime_LeftHand();
-  MUSIC_Play_ACDC();
-  MUSIC_Play_SuperMario();
+  SONGS_Play_Tetris_LeftHand();
+  SONGS_Play_TetrisRagtime_LeftHand();
+  SONGS_Play_Zelda_LeftHand();
+  SONGS_Play_ACDC();
+  SONGS_Play_SuperMario();
   /* Infinite loop */
   for(;;)
   {
@@ -626,8 +627,9 @@ void StartTrackOneTask(void *argument)
 void StartTrackTwoTask(void *argument)
 {
   /* USER CODE BEGIN StartTrackTwoTask */
-  MUSIC_Play_Tetris_RightHand();
-  MUSIC_Play_TetrisRagtime_RightHand();
+  SONGS_Play_Tetris_RightHand();
+  SONGS_Play_TetrisRagtime_RightHand();
+  SONGS_Play_Zelda_RightHand();
   /* Infinite loop */
   for(;;)
   {

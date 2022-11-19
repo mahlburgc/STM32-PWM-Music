@@ -2,7 +2,7 @@
  * @file           : speaker.c
  * @author         : Christian Mahlburg
  * @date           : 16.11.2022
- * @brief          : Module to control up to 3 speaker with pwm.
+ * @brief          : Module to control various speaker with pwm.
  *
  ********************************************************************************
  * MIT License
@@ -30,24 +30,18 @@
  ********************************************************************************/
 
 #include "speaker.h"
-#include "main.h"
-#include "cmsis_os.h"
 
-#define SPEAKER_Delay(x) osDelay(x)
-
-#define staccatoLenPercent 10 /* staccato note duration reduced by x percent */
-
-static void SPEAKER_SetFrequency(Speaker_t speaker, uint32_t frequency);
+static void SPEAKER_SetFrequency(Speaker_t sp, uint32_t freq_cHz);
 
 /**
- * @brief Configure PWM output to given frequency by setting ARR Register.
+ * @brief Configure PWM output to given frequency in centiHz by setting ARR Register.
  *        f_pwm = (f_sys)/((arr + 1) * (psc + 1)
  */
-static void SPEAKER_SetFrequency(Speaker_t speaker, uint32_t frequency)
+static void SPEAKER_SetFrequency(Speaker_t sp, uint32_t freq_cHz)
 {
-    uint64_t f_sys = (uint64_t)SystemCoreClock * 100; /* in dHz */
-    uint32_t f_pwm = frequency;
-    uint32_t psc = LL_TIM_GetPrescaler(speaker.timer); /* prescaler */
+    uint64_t f_sys = (uint64_t)SystemCoreClock * 100; /* in cHz */
+    uint32_t f_pwm = freq_cHz;
+    uint32_t psc = LL_TIM_GetPrescaler(sp.timer); /* prescaler */
 
 #ifdef DEBUG /* to avoid "unused warning" in release build */
     uint32_t arr_max = 0xFFFF; /* only 16bit values are allowed */
@@ -55,139 +49,55 @@ static void SPEAKER_SetFrequency(Speaker_t speaker, uint32_t frequency)
     uint32_t f_pwm_max = (f_sys / ((arr_min + 1) * (psc + 1)));
     uint32_t f_pwm_min = (f_sys / ((arr_max + 1) * (psc + 1)));
 
-    assert_param((frequency >= f_pwm_min) && (frequency <= f_pwm_max));
+    assert_param((freq_cHz >= f_pwm_min) && (freq_cHz <= f_pwm_max));
 #endif
 
     uint32_t autoReload = (f_sys / (f_pwm * (psc + 1))) - 1;
     uint32_t pulseWidth = ((autoReload + 1) / 2) - 1;
 
-    LL_TIM_SetAutoReload(speaker.timer, autoReload);
+    LL_TIM_SetAutoReload(sp.timer, autoReload);
 
-    if (speaker.channel == LL_TIM_CHANNEL_CH1)
+    if (sp.channel == LL_TIM_CHANNEL_CH1)
     {
-      LL_TIM_OC_SetCompareCH1(speaker.timer, pulseWidth);
+      LL_TIM_OC_SetCompareCH1(sp.timer, pulseWidth);
     }
-    else if (speaker.channel == LL_TIM_CHANNEL_CH2)
+    else if (sp.channel == LL_TIM_CHANNEL_CH2)
     {
-      LL_TIM_OC_SetCompareCH2(speaker.timer, pulseWidth);
+      LL_TIM_OC_SetCompareCH2(sp.timer, pulseWidth);
     }
-    else if (speaker.channel == LL_TIM_CHANNEL_CH3)
+    else if (sp.channel == LL_TIM_CHANNEL_CH3)
     {
-      LL_TIM_OC_SetCompareCH3(speaker.timer, pulseWidth);
+      LL_TIM_OC_SetCompareCH3(sp.timer, pulseWidth);
     }
-    else if (speaker.channel == LL_TIM_CHANNEL_CH4)
+    else if (sp.channel == LL_TIM_CHANNEL_CH4)
     {
-      LL_TIM_OC_SetCompareCH4(speaker.timer, pulseWidth);
+      LL_TIM_OC_SetCompareCH4(sp.timer, pulseWidth);
     }
 }
 
 /**
- * @brief Plays a note with a given frequency and duration.
+ * @brief Start a tone with a given frequency in centiHz.
  *        This is done by configuring and enable PWM output.
  */
-void SPEAKER_Play(Speaker_t speaker, uint32_t frequency, uint32_t duration)
+void SPEAKER_Start(Speaker_t sp, uint32_t freq_cHz)
 {
-    LL_TIM_CC_DisableChannel(speaker.timer, speaker.channel);
-    LL_TIM_DisableCounter(speaker.timer);
+    LL_TIM_CC_DisableChannel(sp.timer, sp.channel);
+    LL_TIM_DisableCounter(sp.timer);
 
-    if (frequency > 0)
+    if (freq_cHz > 0)
     {
-        LL_TIM_SetCounter(speaker.timer, 0);
-        SPEAKER_SetFrequency(speaker, frequency);
-        LL_TIM_EnableCounter(speaker.timer);
-        LL_TIM_CC_EnableChannel(speaker.timer, speaker.channel);
-
-        SPEAKER_Delay(duration);
-
-        LL_TIM_CC_DisableChannel(speaker.timer, speaker.channel);
-        LL_TIM_DisableCounter(speaker.timer);
+        LL_TIM_SetCounter(sp.timer, 0);
+        SPEAKER_SetFrequency(sp, freq_cHz);
+        LL_TIM_EnableCounter(sp.timer);
+        LL_TIM_CC_EnableChannel(sp.timer, sp.channel);
     }
-    else /* pause */
-    {
-        SPEAKER_Delay(duration);
-    }
-}
-
-/**
- * @brief Plays a note with a given frequency and duration.
- *        A staccato is added here.
- */
-void SPEAKER_PlayStac(Speaker_t speaker, uint32_t frequency, uint32_t duration)
-{
-    uint32_t staccatoLength = (duration * staccatoLenPercent) / 100;
-
-    SPEAKER_Play(speaker, frequency, duration - staccatoLength);
-    SPEAKER_Pause(speaker, staccatoLength);
 }
 
 /**
  * @brief Stops audio output of given speaker.
  */
-void SPEAKER_Stop(Speaker_t speaker)
+void SPEAKER_Stop(Speaker_t sp)
 {
-    LL_TIM_CC_DisableChannel(speaker.timer, speaker.channel);
-    LL_TIM_DisableCounter(speaker.timer);
-}
-
-
-/**
- * @brief Pause for given duration.
- */
-void SPEAKER_Pause(Speaker_t speaker, uint32_t duration)
-{
-    LL_TIM_CC_DisableChannel(speaker.timer, speaker.channel);
-    LL_TIM_DisableCounter(speaker.timer);
-    SPEAKER_Delay(duration);
-}
-
-/**
- * @brief Plays a note with a given frequency and duration.
- *        This is done by configuring and enable PWM output.
- */
-void SPEAKER_PlayCont(Speaker_t speaker, uint32_t frequency)
-{
-    LL_TIM_CC_DisableChannel(speaker.timer, speaker.channel);
-    LL_TIM_DisableCounter(speaker.timer);
-
-    if (frequency > 0)
-    {
-        LL_TIM_SetCounter(speaker.timer, 0);
-        SPEAKER_SetFrequency(speaker, frequency);
-        LL_TIM_EnableCounter(speaker.timer);
-        LL_TIM_CC_EnableChannel(speaker.timer, speaker.channel);
-    }
-}
-
-/**
- * @brief Plays two notes with a given frequency and duration with staccato.
- *        This is done by configuring and enable PWM output.
- */
-void SPEAKER_PlayTwoStac(Speaker_t speaker1, uint32_t freq1, Speaker_t speaker2, uint32_t freq2, uint32_t duration)
-{
-    uint32_t staccatoLength = (duration * staccatoLenPercent) / 100;
-
-    SPEAKER_PlayCont(speaker1, freq1);
-    SPEAKER_PlayCont(speaker2, freq2);
-
-    SPEAKER_Delay(duration - staccatoLength);
-
-    SPEAKER_Stop(speaker1);
-    SPEAKER_Stop(speaker2);
-
-    SPEAKER_Delay(staccatoLength);
-}
-
-/**
- * @brief Plays two notes with a given frequency and duration with staccato.
- *        This is done by configuring and enable PWM output.
- */
-void SPEAKER_PlayTwo(Speaker_t speaker1, uint32_t freq1, Speaker_t speaker2, uint32_t freq2, uint32_t duration)
-{
-    SPEAKER_PlayCont(speaker1, freq1);
-    SPEAKER_PlayCont(speaker2, freq2);
-
-    SPEAKER_Delay(duration);
-
-    SPEAKER_Stop(speaker1);
-    SPEAKER_Stop(speaker2);
+    LL_TIM_CC_DisableChannel(sp.timer, sp.channel);
+    LL_TIM_DisableCounter(sp.timer);
 }
