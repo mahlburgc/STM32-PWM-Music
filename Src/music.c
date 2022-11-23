@@ -72,7 +72,7 @@ void MUSIC_SetBPM(uint32_t bpm)
  */
 void MUSIC_PlayCont(Speaker_t sp, uint32_t freq_cHz)
 {
-  SPEAKER_Start(sp, freq_cHz);
+    SPEAKER_Start(sp, freq_cHz);
 }
 
 /**
@@ -80,7 +80,7 @@ void MUSIC_PlayCont(Speaker_t sp, uint32_t freq_cHz)
  */
 void MUSIC_Stop(Speaker_t sp)
 {
-  SPEAKER_Stop(sp);
+    SPEAKER_Stop(sp);
 }
 
 /**
@@ -88,13 +88,13 @@ void MUSIC_Stop(Speaker_t sp)
  */
 void MUSIC_Play(Speaker_t sp, uint32_t freq_cHz, uint32_t duration)
 {
-  SPEAKER_Start(sp, freq_cHz);
+    SPEAKER_Start(sp, freq_cHz);
 
-  Delay(duration - NOTE_OFF_TIME_MS);
+    Delay(duration - NOTE_OFF_TIME_MS);
 
-  SPEAKER_Stop(sp);
+    SPEAKER_Stop(sp);
 
-  Delay(NOTE_OFF_TIME_MS);
+    Delay(NOTE_OFF_TIME_MS);
 }
 
 /**
@@ -102,15 +102,15 @@ void MUSIC_Play(Speaker_t sp, uint32_t freq_cHz, uint32_t duration)
  */
 void MUSIC_PlayTwo(Speaker_t sp1, uint32_t freq1_cHz, Speaker_t sp2, uint32_t freq2_cHz, uint32_t duration)
 {
-  SPEAKER_Start(sp1, freq1_cHz);
-  SPEAKER_Start(sp2, freq2_cHz);
+    SPEAKER_Start(sp1, freq1_cHz);
+    SPEAKER_Start(sp2, freq2_cHz);
 
-  Delay(duration - NOTE_OFF_TIME_MS);
+    Delay(duration - NOTE_OFF_TIME_MS);
 
-  SPEAKER_Stop(sp1);
-  SPEAKER_Stop(sp2);
+    SPEAKER_Stop(sp1);
+    SPEAKER_Stop(sp2);
 
-  Delay(NOTE_OFF_TIME_MS);
+    Delay(NOTE_OFF_TIME_MS);
 }
 
 /**

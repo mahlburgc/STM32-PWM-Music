@@ -18,7 +18,7 @@ static Speaker_t right = { TIM3, LL_TIM_CHANNEL_CH1 }; /* PB4 */
  */
 void SONGS_Play_ACDC(void)
 {
-  MUSIC_SetBPM(134);
+    MUSIC_SetBPM(134);
 
     for (uint8_t i = 0; i < 4; i++)
     {
