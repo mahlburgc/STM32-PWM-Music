@@ -10,3 +10,7 @@ Implemented songs:
 - Tetris + Tetris Ragtime Edition
 - ACDC - Thunderstruck Intro
 - Super Mario Bros. (just frist few notes)
+
+## Circuit Diagram
+<img src="Fritzing/circuit.png" alt="Circuit with three speakers" width="500"/>
+Important: The used pins does not met the real pin positions an a STM32 Nucleo board.
