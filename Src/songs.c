@@ -1582,13 +1582,23 @@ void SONGS_Play_Zelda_LeftHand(void)
     MUSIC_Play(left, f2, eighth_triplet);
 
     /* 3 */
-    MUSIC_Play(left, g2, half + quarter);
+    MUSIC_Play(left, g2, quarter);
+    MUSIC_Play(left, g2, eighth_triplet);
+    MUSIC_Play(left, g2, eighth_triplet);
+    MUSIC_Play(left, g2, eighth_triplet);
+
+    MUSIC_Play(left, g2, quarter);
     MUSIC_Play(left, f2, eighth_triplet);
     MUSIC_Play(left, f2, eighth_triplet);
     MUSIC_Play(left, f2, eighth_triplet);
 
     /* 4 */
-    MUSIC_Play(left, g2, half + quarter);
+    MUSIC_Play(left, g2, quarter);
+    MUSIC_Play(left, g2, eighth_triplet);
+    MUSIC_Play(left, g2, eighth_triplet);
+    MUSIC_Play(left, g2, eighth_triplet);
+
+    MUSIC_Play(left, g2, quarter);
     MUSIC_Play(left, c4, eighth_triplet);
     MUSIC_Play(left, b3, eighth_triplet);
     MUSIC_Play(left, a3, eighth_triplet);
