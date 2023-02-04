@@ -1,8 +1,8 @@
 /********************************************************************************
- * @file           : speaker.h
+ * @file           : pwm.h
  * @author         : Christian Mahlburg
  * @date           : 16.11.2022
- * @brief          : Module to control various speaker with pwm.
+ * @brief          : Module to control pwm outputs.
  *
  ********************************************************************************
  * MIT License
@@ -30,22 +30,23 @@
  ********************************************************************************/
 
 
-#ifndef SPEAKER_H_
-#define SPEAKER_H_
+#ifndef PWM_H_
+#define PWM_H_
 
 #include "stdint.h"
 #include "stm32f0xx_ll_tim.h"
 
 /**
- * @brief Speaker definition with timer and CC-Channel.
+ * @brief Pwm definition with timer and CC-Channel.
  */
 typedef struct
 {
     TIM_TypeDef* timer;
     uint32_t channel;
-} Speaker_t;
+} Pwm_t;
 
-void SPEAKER_Start(Speaker_t sp, uint32_t freq_cHz);
-void SPEAKER_Stop(Speaker_t sp);
+void PWM_SetFrequency(Pwm_t pwm, uint32_t freq_cHz);
+void PWM_Start(Pwm_t pwm, uint32_t freq_cHz);
+void PWM_Stop(Pwm_t pwm);
 
-#endif /* SPEAKER_H_ */
+#endif /* PWM_H_ */

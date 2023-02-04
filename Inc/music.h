@@ -33,7 +33,7 @@
 #ifndef MUSIC_H_
 #define MUSIC_H_
 
-#include "speaker.h"
+#include "pwm.h"
 
 /* tone interval */
 #define MINOR_SECOND    16/15
@@ -189,12 +189,12 @@ extern uint32_t thirtysecond;
 
 void MUSIC_SetBPM(uint32_t quarterLengthMs);
 
-void MUSIC_PlayCont(Speaker_t sp, uint32_t freq_cHz);
-void MUSIC_Stop(Speaker_t sp);
+void MUSIC_PlayCont(Pwm_t sp, uint32_t freq_cHz);
+void MUSIC_Stop(Pwm_t sp);
 void MUSIC_Pause(uint32_t duration);
-void MUSIC_Play(Speaker_t sp, uint32_t freq_cHz, uint32_t duration);
-void MUSIC_PlayTwo(Speaker_t sp1, uint32_t freq1_cHz, Speaker_t sp2, uint32_t freq2_cHz, uint32_t duration);
-void MUSIC_PlayStac(Speaker_t nr, uint32_t freq_cHz, uint32_t duration);
-void MUSIC_PlayTwoStac(Speaker_t sp1, uint32_t freq1_cHz, Speaker_t sp2, uint32_t freq2_cHz, uint32_t duration);
+void MUSIC_Play(Pwm_t sp, uint32_t freq_cHz, uint32_t duration);
+void MUSIC_PlayTwo(Pwm_t sp1, uint32_t freq1_cHz, Pwm_t sp2, uint32_t freq2_cHz, uint32_t duration);
+void MUSIC_PlayStac(Pwm_t nr, uint32_t freq_cHz, uint32_t duration);
+void MUSIC_PlayTwoStac(Pwm_t sp1, uint32_t freq1_cHz, Pwm_t sp2, uint32_t freq2_cHz, uint32_t duration);
 
 #endif /* MUSIC_H_ */

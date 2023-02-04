@@ -33,9 +33,9 @@
 #include "music.h"
 
 /* pwm speaker */
-static Speaker_t left = { TIM14, LL_TIM_CHANNEL_CH1 }; /* PA4 */
-static Speaker_t middle = { TIM2, LL_TIM_CHANNEL_CH2 }; /* PB3 */
-static Speaker_t right = { TIM3, LL_TIM_CHANNEL_CH1 }; /* PB4 */
+static Pwm_t left = { TIM14, LL_TIM_CHANNEL_CH1 }; /* PA4 */
+static Pwm_t middle = { TIM2, LL_TIM_CHANNEL_CH2 }; /* PB3 */
+static Pwm_t right = { TIM3, LL_TIM_CHANNEL_CH1 }; /* PB4 */
 
 /**
  * @brief Play ACDC - Thunderstruck

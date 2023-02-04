@@ -30,7 +30,6 @@
  ********************************************************************************/
 
 #include "music.h"
-#include "speaker.h"
 #include "cmsis_os.h"
 
 #define Delay(x) osDelay(x)
@@ -70,29 +69,29 @@ void MUSIC_SetBPM(uint32_t bpm)
 /**
  * @brief Start playing a note with a given frequency.
  */
-void MUSIC_PlayCont(Speaker_t sp, uint32_t freq_cHz)
+void MUSIC_PlayCont(Pwm_t sp, uint32_t freq_cHz)
 {
-    SPEAKER_Start(sp, freq_cHz);
+    PWM_Start(sp, freq_cHz);
 }
 
 /**
  * @brief Stop playing a note.
  */
-void MUSIC_Stop(Speaker_t sp)
+void MUSIC_Stop(Pwm_t sp)
 {
-    SPEAKER_Stop(sp);
+    PWM_Stop(sp);
 }
 
 /**
  * @brief Play a note with a given frequency and duration.
  */
-void MUSIC_Play(Speaker_t sp, uint32_t freq_cHz, uint32_t duration)
+void MUSIC_Play(Pwm_t sp, uint32_t freq_cHz, uint32_t duration)
 {
-    SPEAKER_Start(sp, freq_cHz);
+    PWM_Start(sp, freq_cHz);
 
     Delay(duration - NOTE_OFF_TIME_MS);
 
-    SPEAKER_Stop(sp);
+    PWM_Stop(sp);
 
     Delay(NOTE_OFF_TIME_MS);
 }
@@ -100,15 +99,15 @@ void MUSIC_Play(Speaker_t sp, uint32_t freq_cHz, uint32_t duration)
 /**
  * @brief Play two notes with a given frequency and duration.
  */
-void MUSIC_PlayTwo(Speaker_t sp1, uint32_t freq1_cHz, Speaker_t sp2, uint32_t freq2_cHz, uint32_t duration)
+void MUSIC_PlayTwo(Pwm_t sp1, uint32_t freq1_cHz, Pwm_t sp2, uint32_t freq2_cHz, uint32_t duration)
 {
-    SPEAKER_Start(sp1, freq1_cHz);
-    SPEAKER_Start(sp2, freq2_cHz);
+    PWM_Start(sp1, freq1_cHz);
+    PWM_Start(sp2, freq2_cHz);
 
     Delay(duration - NOTE_OFF_TIME_MS);
 
-    SPEAKER_Stop(sp1);
-    SPEAKER_Stop(sp2);
+    PWM_Stop(sp1);
+    PWM_Stop(sp2);
 
     Delay(NOTE_OFF_TIME_MS);
 }
@@ -117,15 +116,15 @@ void MUSIC_PlayTwo(Speaker_t sp1, uint32_t freq1_cHz, Speaker_t sp2, uint32_t fr
  * @brief Play a note with a given frequency and duration.
  *        A staccato is added here.
  */
-void MUSIC_PlayStac(Speaker_t sp, uint32_t freq_cHz, uint32_t duration)
+void MUSIC_PlayStac(Pwm_t sp, uint32_t freq_cHz, uint32_t duration)
 {
     uint32_t stacOffTime = (duration * STACCATO_OFF_TIME_PERCENT) / 100;
 
-    SPEAKER_Start(sp, freq_cHz);
+    PWM_Start(sp, freq_cHz);
 
     Delay(duration - stacOffTime);
 
-    SPEAKER_Stop(sp);
+    PWM_Stop(sp);
 
     Delay(stacOffTime);
 }
@@ -134,17 +133,17 @@ void MUSIC_PlayStac(Speaker_t sp, uint32_t freq_cHz, uint32_t duration)
  * @brief Play two notes with a given frequency and duration.
  *        A staccato is added here.
  */
-void MUSIC_PlayTwoStac(Speaker_t sp1, uint32_t freq1_cHz, Speaker_t sp2, uint32_t freq2_cHz, uint32_t duration)
+void MUSIC_PlayTwoStac(Pwm_t sp1, uint32_t freq1_cHz, Pwm_t sp2, uint32_t freq2_cHz, uint32_t duration)
 {
     uint32_t stacOffTime = (duration * STACCATO_OFF_TIME_PERCENT) / 100;
 
-    SPEAKER_Start(sp1, freq1_cHz);
-    SPEAKER_Start(sp2, freq2_cHz);
+    PWM_Start(sp1, freq1_cHz);
+    PWM_Start(sp2, freq2_cHz);
 
     Delay(duration - stacOffTime);
 
-    SPEAKER_Stop(sp1);
-    SPEAKER_Stop(sp2);
+    PWM_Stop(sp1);
+    PWM_Stop(sp2);
 
     Delay(stacOffTime);
 }

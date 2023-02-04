@@ -2,7 +2,7 @@
  * @file           : speaker.c
  * @author         : Christian Mahlburg
  * @date           : 16.11.2022
- * @brief          : Module to control various speaker with pwm.
+ * @brief          : Module to control various pwm outputs
  *
  ********************************************************************************
  * MIT License
@@ -29,19 +29,17 @@
  *
  ********************************************************************************/
 
-#include "speaker.h"
-
-static void SPEAKER_SetFrequency(Speaker_t sp, uint32_t freq_cHz);
+#include "pwm.h"
 
 /**
  * @brief Configure PWM output to given frequency in centiHz by setting ARR Register.
  *        f_pwm = (f_sys)/((arr + 1) * (psc + 1)
  */
-static void SPEAKER_SetFrequency(Speaker_t sp, uint32_t freq_cHz)
+void PWM_SetFrequency(Pwm_t pwm, uint32_t freq_cHz)
 {
     uint64_t f_sys = (uint64_t)SystemCoreClock * 100; /* in cHz */
     uint32_t f_pwm = freq_cHz;
-    uint32_t psc = LL_TIM_GetPrescaler(sp.timer); /* prescaler */
+    uint32_t psc = LL_TIM_GetPrescaler(pwm.timer); /* prescaler */
 
 #ifdef DEBUG /* to avoid "unused warning" in release build */
     uint32_t arr_max = 0xFFFF; /* only 16bit values are allowed */
@@ -55,23 +53,35 @@ static void SPEAKER_SetFrequency(Speaker_t sp, uint32_t freq_cHz)
     uint32_t autoReload = (f_sys / (f_pwm * (psc + 1))) - 1;
     uint32_t pulseWidth = ((autoReload + 1) / 2) - 1;
 
-    LL_TIM_SetAutoReload(sp.timer, autoReload);
+    if (LL_TIM_IsEnabledCounter(pwm.timer))
+    {
+        while (LL_TIM_GetCounter(pwm.timer) > pulseWidth)
+        {
+            /* When switching frequency while pwm output is already active
+             * (counter is enabled):
+             * Wait till pwm is in first polarity phase of new pulsewidth before
+             * switching ARR register. Otherwise counter may overflow when switching
+             * to new arr value (pwm audio breaks).*/
+        }
+    }
 
-    if (sp.channel == LL_TIM_CHANNEL_CH1)
+    LL_TIM_SetAutoReload(pwm.timer, autoReload);
+
+    if (pwm.channel == LL_TIM_CHANNEL_CH1)
     {
-      LL_TIM_OC_SetCompareCH1(sp.timer, pulseWidth);
+      LL_TIM_OC_SetCompareCH1(pwm.timer, pulseWidth);
     }
-    else if (sp.channel == LL_TIM_CHANNEL_CH2)
+    else if (pwm.channel == LL_TIM_CHANNEL_CH2)
     {
-      LL_TIM_OC_SetCompareCH2(sp.timer, pulseWidth);
+      LL_TIM_OC_SetCompareCH2(pwm.timer, pulseWidth);
     }
-    else if (sp.channel == LL_TIM_CHANNEL_CH3)
+    else if (pwm.channel == LL_TIM_CHANNEL_CH3)
     {
-      LL_TIM_OC_SetCompareCH3(sp.timer, pulseWidth);
+      LL_TIM_OC_SetCompareCH3(pwm.timer, pulseWidth);
     }
-    else if (sp.channel == LL_TIM_CHANNEL_CH4)
+    else if (pwm.channel == LL_TIM_CHANNEL_CH4)
     {
-      LL_TIM_OC_SetCompareCH4(sp.timer, pulseWidth);
+      LL_TIM_OC_SetCompareCH4(pwm.timer, pulseWidth);
     }
 }
 
@@ -79,25 +89,25 @@ static void SPEAKER_SetFrequency(Speaker_t sp, uint32_t freq_cHz)
  * @brief Start a tone with a given frequency in centiHz.
  *        This is done by configuring and enable PWM output.
  */
-void SPEAKER_Start(Speaker_t sp, uint32_t freq_cHz)
+void PWM_Start(Pwm_t pwm, uint32_t freq_cHz)
 {
-    LL_TIM_CC_DisableChannel(sp.timer, sp.channel);
-    LL_TIM_DisableCounter(sp.timer);
+    LL_TIM_CC_DisableChannel(pwm.timer, pwm.channel);
+    LL_TIM_DisableCounter(pwm.timer);
 
     if (freq_cHz > 0)
     {
-        LL_TIM_SetCounter(sp.timer, 0);
-        SPEAKER_SetFrequency(sp, freq_cHz);
-        LL_TIM_EnableCounter(sp.timer);
-        LL_TIM_CC_EnableChannel(sp.timer, sp.channel);
+        LL_TIM_SetCounter(pwm.timer, 0);
+        PWM_SetFrequency(pwm, freq_cHz);
+        LL_TIM_EnableCounter(pwm.timer);
+        LL_TIM_CC_EnableChannel(pwm.timer, pwm.channel);
     }
 }
 
 /**
  * @brief Stops audio output of given speaker.
  */
-void SPEAKER_Stop(Speaker_t sp)
+void PWM_Stop(Pwm_t pwm)
 {
-    LL_TIM_CC_DisableChannel(sp.timer, sp.channel);
-    LL_TIM_DisableCounter(sp.timer);
+    LL_TIM_CC_DisableChannel(pwm.timer, pwm.channel);
+    LL_TIM_DisableCounter(pwm.timer);
 }
