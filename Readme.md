@@ -10,6 +10,7 @@ Implemented songs:
 - Tetris + Tetris Ragtime Edition
 - ACDC - Thunderstruck Intro
 - Super Mario Bros. (just frist few notes)
+- alarm sound (with frequency sweeping)
 
 ## Circuit Diagram
 <img src="Fritzing/circuit.png" alt="Circuit with three speakers" width="500"/>

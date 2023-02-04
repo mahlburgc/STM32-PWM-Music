@@ -36,6 +36,8 @@ void SONGS_Play_ACDC(void);
 
 void SONGS_Play_SuperMario(void);
 
+void SONGS_Play_Alarmsound(void);
+
 void SONGS_Play_Tetris_RightHand(void);
 void SONGS_Play_Tetris_LeftHand(void);
 void SONGS_Play_TetrisRagtime_RightHand(void);

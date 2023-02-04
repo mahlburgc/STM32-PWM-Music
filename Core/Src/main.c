@@ -609,6 +609,7 @@ void StartTrackOneTask(void *argument)
   SONGS_Play_Zelda_LeftHand();
   SONGS_Play_ACDC();
   SONGS_Play_SuperMario();
+  SONGS_Play_Alarmsound();
   /* Infinite loop */
   for(;;)
   {

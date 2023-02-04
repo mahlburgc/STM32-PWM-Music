@@ -31,6 +31,7 @@
 
 #include "songs.h"
 #include "music.h"
+#include "cmsis_os.h"
 
 /* pwm speaker */
 static Pwm_t left = { TIM14, LL_TIM_CHANNEL_CH1 }; /* PA4 */
@@ -118,6 +119,50 @@ void SONGS_Play_SuperMario(void)
     MUSIC_Pause(quarter);
     MUSIC_Play(left, fret_H8, quarter);
     MUSIC_Pause(quarter);
+}
+
+/**
+ * @brief Play alarm sound with frequency sweeping.
+ */
+void SONGS_Play_Alarmsound(void)
+{
+    uint32_t startFreq = c5;
+    uint32_t endFreq = c6;
+    uint16_t sweepDelay = 5;
+    uint16_t freqSteps_cHz = 250;
+
+    PWM_Start(left, startFreq);
+
+    for (uint8_t i = 0; i < 2; i++)
+    {
+        for (uint8_t j = 0; j < 10; j++)
+        {
+            /* sweep up */
+            for (uint32_t freq = startFreq; freq < endFreq; freq = freq + freqSteps_cHz)
+            {
+                PWM_SetFrequency(left, freq);
+                osDelay(sweepDelay);
+            }
+
+            /* sweep down */
+            for (uint32_t freq = endFreq; freq > startFreq; freq = freq - freqSteps_cHz)
+            {
+                PWM_SetFrequency(left, freq);
+                osDelay(sweepDelay);
+            }
+
+            /* increase sweep speed */
+            if (j == 1)
+            {
+                sweepDelay = 2;
+                freqSteps_cHz = 750;
+            }
+        }
+        sweepDelay = 5;
+        freqSteps_cHz = 250;
+    }
+
+    PWM_Stop(left);
 }
 
 /**
