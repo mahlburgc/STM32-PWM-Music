@@ -24,10 +24,13 @@
 /* USER CODE BEGIN Includes */
 #include "string.h"
 #include "songs.h"
+#include "usart3.h"
+#include "music.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 typedef StaticTask_t osStaticThreadDef_t;
+typedef StaticQueue_t osStaticMessageQDef_t;
 /* USER CODE BEGIN PTD */
 
 /* USER CODE END PTD */
@@ -74,6 +77,29 @@ const osThreadAttr_t TrackTwoTask_attributes = {
   .stack_size = sizeof(TrackTwoBuffer),
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for uartMidiTask */
+osThreadId_t uartMidiTaskHandle;
+uint32_t uartMidiTaskBuffer[ 128 ];
+osStaticThreadDef_t uartMidiTaskControlBlock;
+const osThreadAttr_t uartMidiTask_attributes = {
+  .name = "uartMidiTask",
+  .cb_mem = &uartMidiTaskControlBlock,
+  .cb_size = sizeof(uartMidiTaskControlBlock),
+  .stack_mem = &uartMidiTaskBuffer[0],
+  .stack_size = sizeof(uartMidiTaskBuffer),
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for uartMidiQueue */
+osMessageQueueId_t uartMidiQueueHandle;
+uint8_t uartMidiQueueBuffer[ 3 * sizeof( MIDI_UART_RxBuffer_t ) ];
+osStaticMessageQDef_t uartMidiQueueControlBlock;
+const osMessageQueueAttr_t uartMidiQueue_attributes = {
+  .name = "uartMidiQueue",
+  .cb_mem = &uartMidiQueueControlBlock,
+  .cb_size = sizeof(uartMidiQueueControlBlock),
+  .mq_mem = &uartMidiQueueBuffer,
+  .mq_size = sizeof(uartMidiQueueBuffer)
+};
 /* USER CODE BEGIN PV */
 uint32_t sysTickCounter = 0;
 /* USER CODE END PV */
@@ -85,9 +111,11 @@ static void MX_USART1_UART_Init(void);
 static void MX_TIM14_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
+static void MX_USART3_UART_Init(void);
 void StartDefaultTask(void *argument);
 void StartTrackOneTask(void *argument);
 void StartTrackTwoTask(void *argument);
+void StartUartMidiTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 void delay(uint32_t delayMs);
@@ -131,6 +159,7 @@ int main(void)
   MX_TIM14_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
+  MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -150,6 +179,10 @@ int main(void)
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
+  /* Create the queue(s) */
+  /* creation of uartMidiQueue */
+  uartMidiQueueHandle = osMessageQueueNew (3, sizeof(MIDI_UART_RxBuffer_t), &uartMidiQueue_attributes);
+
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -163,6 +196,9 @@ int main(void)
 
   /* creation of TrackTwoTask */
   TrackTwoTaskHandle = osThreadNew(StartTrackTwoTask, NULL, &TrackTwoTask_attributes);
+
+  /* creation of uartMidiTask */
+  uartMidiTaskHandle = osThreadNew(StartUartMidiTask, NULL, &uartMidiTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -461,6 +497,70 @@ static void MX_USART1_UART_Init(void)
 }
 
 /**
+  * @brief USART3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART3_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART3_Init 0 */
+
+  /* USER CODE END USART3_Init 0 */
+
+  LL_USART_InitTypeDef USART_InitStruct = {0};
+
+  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  /* Peripheral clock enable */
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_USART3);
+
+  LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOC);
+  /**USART3 GPIO Configuration
+  PC10   ------> USART3_TX
+  PC11   ------> USART3_RX
+  */
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_10;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Alternate = LL_GPIO_AF_1;
+  LL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_11;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Alternate = LL_GPIO_AF_1;
+  LL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /* USART3 interrupt Init */
+  NVIC_SetPriority(USART3_4_IRQn, 3);
+  NVIC_EnableIRQ(USART3_4_IRQn);
+
+  /* USER CODE BEGIN USART3_Init 1 */
+
+  /* USER CODE END USART3_Init 1 */
+  USART_InitStruct.BaudRate = 31250;
+  USART_InitStruct.DataWidth = LL_USART_DATAWIDTH_8B;
+  USART_InitStruct.StopBits = LL_USART_STOPBITS_1;
+  USART_InitStruct.Parity = LL_USART_PARITY_NONE;
+  USART_InitStruct.TransferDirection = LL_USART_DIRECTION_TX_RX;
+  USART_InitStruct.HardwareFlowControl = LL_USART_HWCONTROL_NONE;
+  USART_InitStruct.OverSampling = LL_USART_OVERSAMPLING_16;
+  LL_USART_Init(USART3, &USART_InitStruct);
+  LL_USART_DisableIT_CTS(USART3);
+  LL_USART_ConfigAsyncMode(USART3);
+  LL_USART_Enable(USART3);
+  /* USER CODE BEGIN USART3_Init 2 */
+
+  /* USER CODE END USART3_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -604,11 +704,11 @@ void StartDefaultTask(void *argument)
 void StartTrackOneTask(void *argument)
 {
   /* USER CODE BEGIN StartTrackOneTask */
-  SONGS_Play_Tetris_LeftHand();
-  SONGS_Play_TetrisRagtime_LeftHand();
-  SONGS_Play_Zelda_LeftHand();
-  SONGS_Play_ACDC();
-  SONGS_Play_SuperMario();
+//  SONGS_Play_Tetris_LeftHand();
+//  SONGS_Play_TetrisRagtime_LeftHand();
+//  SONGS_Play_Zelda_LeftHand();
+//  SONGS_Play_ACDC();
+//  SONGS_Play_SuperMario();
   /* Infinite loop */
   for(;;)
   {
@@ -627,15 +727,120 @@ void StartTrackOneTask(void *argument)
 void StartTrackTwoTask(void *argument)
 {
   /* USER CODE BEGIN StartTrackTwoTask */
-  SONGS_Play_Tetris_RightHand();
-  SONGS_Play_TetrisRagtime_RightHand();
-  SONGS_Play_Zelda_RightHand();
+//  SONGS_Play_Tetris_RightHand();
+//  SONGS_Play_TetrisRagtime_RightHand();
+//  SONGS_Play_Zelda_RightHand();
   /* Infinite loop */
   for(;;)
   {
     osDelay(osWaitForever);
   }
   /* USER CODE END StartTrackTwoTask */
+}
+
+/* USER CODE BEGIN Header_StartUartMidiTask */
+/**
+* @brief Function implementing the uartMidiTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartUartMidiTask */
+void StartUartMidiTask(void *argument)
+{
+  /* USER CODE BEGIN StartUartMidiTask */
+//  const char msg[] = "Hello from Uart Midi Task\r\n";
+  MIDI_UART_RxBuffer_t midiCmdBuffer = { 0 };
+  Speaker_t left = { TIM14, LL_TIM_CHANNEL_CH1 }; /* PA4 */
+  uint32_t midiFrequencyArray[] =
+  {
+          c1   ,
+          cis1 ,
+          d1   ,
+          dis1 ,
+          e1   ,
+          f1   ,
+          fis1 ,
+          g1   ,
+          gis1 ,
+          a1   ,
+          ais1 ,
+          h1   ,
+          c2   ,
+          cis2 ,
+          d2   ,
+          dis2 ,
+          e2   ,
+          f2   ,
+          fis2 ,
+          g2   ,
+          gis2 ,
+          a2   ,
+          ais2 ,
+          h2   ,
+          c3   ,
+          cis3 ,
+          d3   ,
+          dis3 ,
+          e3   ,
+          f3   ,
+          fis3 ,
+          g3   ,
+          gis3 ,
+          a3   ,
+          ais3 ,
+          h3   ,
+          c4   ,
+          cis4 ,
+          d4   ,
+          dis4 ,
+          e4   ,
+          f4   ,
+          fis4 ,
+          g4   ,
+          gis4 ,
+          a4   ,
+          ais4 ,
+          h4   ,
+          c5   ,
+          cis5 ,
+          d5   ,
+          dis5 ,
+          e5   ,
+          f5   ,
+          fis5 ,
+          g5   ,
+          gis5 ,
+          a5   ,
+          ais5 ,
+          h5   ,
+          c6   ,
+  };
+
+  MIDI_UART_Init();
+
+  for(;;)
+  {
+    osMessageQueueGet(uartMidiQueueHandle, &midiCmdBuffer,NULL, osWaitForever);
+
+    switch (midiCmdBuffer.data[0])
+    {
+        case 0x80:
+            MUSIC_Stop(left);
+//            MUSIC_Stop(left);
+            break;
+
+        case 0x90:
+            if (midiCmdBuffer.data[1] < sizeof(midiFrequencyArray))
+            {
+                MUSIC_PlayCont(left, midiFrequencyArray[midiCmdBuffer.data[1]]);
+            }
+//            MUSIC_PlayCont(left, c5);
+            break;
+    }
+
+
+  }
+  /* USER CODE END StartUartMidiTask */
 }
 
 /**
