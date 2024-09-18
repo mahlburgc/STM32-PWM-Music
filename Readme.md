@@ -13,5 +13,12 @@ Implemented songs:
 - alarm sound (with frequency sweeping)
 
 ## Circuit Diagram
+Single speaker for each PWM output:
+
 <img src="Fritzing/circuit.png" alt="Circuit with three speakers" width="500"/>
+
+You can also just combine the PWM outputs to drive a single speaker (see also [here](http://www.openmusiclabs.com/learning/digital/pwm-dac/dual-pwm-circuits/index.html) for combining multiple PWM outputs):
+
+<img src="Fritzing/circuit_single_speaker.png" alt="Circuit with one speakers" width="500"/>
+
 Important: The used pins does not met the real pin positions an a STM32 Nucleo board.
